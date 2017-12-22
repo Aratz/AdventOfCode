@@ -1,0 +1,34 @@
+[package]
+name = "Adven Calendar"
+version = "0.1.0"
+authors = ["Adrien Coulier <adrien.coulier@free.fr>"]
+
+[dependencies]
+rulinalg="0.4.2"
+
+[[bin]]
+name = "day1"
+
+[[bin]]
+name = "day1b"
+
+[[bin]]
+name = "day2"
+
+[[bin]]
+name = "day2b"
+
+[[bin]]
+name = "day3"
+
+[[bin]]
+name = "day4"
+
+[[bin]]
+name = "day4b"
+
+[[bin]]
+name = "day5"
+
+[[bin]]
+name = "day5b"
