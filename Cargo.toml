@@ -1,0 +1,4 @@
+[package]
+name = "Advent of Code 2018"
+version = "0.1.0"
+authors = ["Adrien Coulier <adrien.coulier@free.fr>"]
