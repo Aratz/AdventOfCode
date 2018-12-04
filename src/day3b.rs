@@ -15,7 +15,6 @@ fn main() {
             .filter(|s| !s.is_empty())
             .map(|s| s.trim().parse::<i32>().unwrap()).collect();
 
-        lines.push(data.clone());
 
         for x in data[1]..data[1]+data[3] {
             for y in data[2]..data[2]+data[4] {
@@ -23,6 +22,8 @@ fn main() {
                 *count += 1;
             }
         }
+
+        lines.push(data);
     }
 
     println!("{}", fabric.values().filter(|&x| *x > 1).count());
