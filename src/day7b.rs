@@ -47,24 +47,17 @@ fn main() {
 
     let n_workers = 5;
 
-    let mut levels:Vec<HashSet<char>> = vec![HashSet::new(); order.len()];
-    for c in order.chars().rev() {
-        let mut max_level = match levels.iter().enumerate()
-            .filter(|&(_, nodes)| nodes.iter().any(|n| h2.get(n).unwrap().0.contains(&c)))
-            .map(|(i, _)| i).max() {
-                Some(x) => x + 1,
+    let mut time:HashMap<char, u32> = HashMap::new();
+    for c in order.chars() {
+        let anc = match h2.get(&c).unwrap().0.iter()
+            .map(|n| time.get(n).unwrap()).max() {
+                Some(x) => *x,
                 None => 0,
             };
-        while levels[max_level].len() >= n_workers {
-            max_level += 1;
-        }
+        let t = time.entry(c).or_insert(0);
+        *t = anc + duration(c);
 
-        levels[max_level].insert(c);
+        println!("{} {}", c, *t);
     }
-    println!("{}", levels.iter()
-             .map(|nodes| match nodes.iter().map(|&c| duration(c)).max() {
-                Some(x) => x,
-                None => 0,
-             })
-             .sum::<u32>());
+
 }
