@@ -14,7 +14,7 @@ fn next_permutation<T: PartialOrd>(a: &mut [T]) -> bool {
     let (k, l) = {
         let (k, ak) = match a.iter().zip(a.iter().skip(1)).enumerate()
             .filter(|(_i, (a1, a2))| a1 < a2).last() {
-            Some((i, (ak, ak1))) => (i, ak),
+            Some((i, (ak, _ak1))) => (i, ak),
             None => return false,
         };
 
@@ -35,8 +35,6 @@ fn amp_computer(start: usize,
                 input: &mut VecDeque<i32>,
                 output: &mut VecDeque<i32>) -> usize {
     let mut i = start;
-    let mut sig_in = 0;
-
 
     loop {
         let opcode = instructions[i] % 100;
