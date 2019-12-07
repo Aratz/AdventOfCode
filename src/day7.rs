@@ -29,6 +29,70 @@ fn next_permutation<T: PartialOrd>(a: &mut [T]) -> bool {
     true
 }
 
+fn amp_computer(mut instructions: Vec<i32>, input_vec: Vec<i32>) -> i32{
+    let mut i = 0;
+    let mut input = input_vec.iter();
+    let mut sig_in = 0;
+
+
+    loop {
+        let opcode = instructions[i] % 100;
+
+        if opcode == 99 {break;}
+
+
+        let out = match opcode {
+            1 | 2 | 7 | 8 => Some(instructions[i+3] as usize),
+            3 => Some(instructions[i+1] as usize),
+            4 => Some(if instructions[i]/100 % 10 == 1 { i + 1 } else { instructions[i+1] as usize }),
+            5 | 6 => None,
+            _ => panic!("Invalid position!"),
+        };
+
+        match out {
+            Some(out) => instructions[out] = match opcode {
+                1 | 2 => {
+                    let (in1, in2) = get_in(&instructions, i);
+
+                    if opcode == 1 { instructions[in1] + instructions[in2]}
+                        else { instructions[in1] * instructions[in2] }},
+                3 => { *input.next().unwrap() },
+                4 => {
+                    //println!("Opcode 4: amp:{}, output: {}", amp, instructions[out]);
+                    sig_in = instructions[out];
+                    instructions[out] },
+                7 | 8 => {
+                    let (in1, in2) = get_in(&instructions, i);
+
+                    if (opcode == 7 && instructions[in1] < instructions[in2])
+                        || (opcode == 8 && instructions[in1] == instructions[in2])
+                            { 1 }
+                        else
+                            { 0 }
+                }
+                _ => panic!("Invalid position!"),
+            },
+            None => {},
+        };
+
+        i = match opcode {
+            1 | 2 | 7 | 8 => i + 4,
+            3 | 4 => i + 2,
+            5 | 6 => {
+                let (in1, in2) = get_in(&instructions, i);
+
+                if (opcode == 5 && instructions[in1] != 0) || (opcode == 6 && instructions[in1] == 0)
+                    { instructions[in2] as usize }
+                else
+                    { i + 3 }
+            }
+            _ => panic!("Invalid position!"),
+        };
+    }
+
+    sig_in
+}
+
 fn main() {
     use std::io::{self, BufRead};
 
@@ -45,66 +109,7 @@ fn main() {
         let mut sig_in = 0;
 
         for amp in 0..5 {
-            let mut i = 0;
-            let mut numbers = numbers.clone();
-            let input_vec = vec![*phase.next().unwrap(), sig_in];
-            let mut input = input_vec.iter();
-
-
-            loop {
-                let opcode = numbers[i] % 100;
-
-                if opcode == 99 {break;}
-
-
-                let out = match opcode {
-                    1 | 2 | 7 | 8 => Some(numbers[i+3] as usize),
-                    3 => Some(numbers[i+1] as usize),
-                    4 => Some(if numbers[i]/100 % 10 == 1 { i + 1 } else { numbers[i+1] as usize }),
-                    5 | 6 => None,
-                    _ => panic!("Invalid position!"),
-                };
-
-                match out {
-                    Some(out) => numbers[out] = match opcode {
-                        1 | 2 => {
-                            let (in1, in2) = get_in(&numbers, i);
-
-                            if opcode == 1 { numbers[in1] + numbers[in2]}
-                                else { numbers[in1] * numbers[in2] }},
-                        3 => { *input.next().unwrap() },
-                        4 => {
-                            //println!("Opcode 4: amp:{}, output: {}", amp, numbers[out]);
-                            sig_in = numbers[out];
-                            numbers[out] },
-                        7 | 8 => {
-                            let (in1, in2) = get_in(&numbers, i);
-
-                            if (opcode == 7 && numbers[in1] < numbers[in2])
-                                || (opcode == 8 && numbers[in1] == numbers[in2])
-                                    { 1 }
-                                else
-                                    { 0 }
-                        }
-                        _ => panic!("Invalid position!"),
-                    },
-                    None => {},
-                };
-
-                i = match opcode {
-                    1 | 2 | 7 | 8 => i + 4,
-                    3 | 4 => i + 2,
-                    5 | 6 => {
-                        let (in1, in2) = get_in(&numbers, i);
-
-                        if (opcode == 5 && numbers[in1] != 0) || (opcode == 6 && numbers[in1] == 0)
-                            { numbers[in2] as usize }
-                        else
-                            { i + 3 }
-                    }
-                    _ => panic!("Invalid position!"),
-                };
-            }
+            sig_in = amp_computer(numbers.clone(), vec![*phase.next().unwrap(), sig_in]);
         }
         sig_max = max(sig_max, sig_in);
     }
