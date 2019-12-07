@@ -5,6 +5,7 @@ authors = ["Adrien Coulier <adrien.coulier@free.fr>"]
 
 [dependencies]
 itertools = "0.8.2"
+permutate = "0.3.2"
 
 [[bin]]
 name = "day1"
@@ -49,3 +50,7 @@ path = "src/day6.rs"
 [[bin]]
 name = "day6b"
 path = "src/day6b.rs"
+
+[[bin]]
+name = "day7"
+path = "src/day7.rs"
