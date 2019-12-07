@@ -127,7 +127,9 @@ fn main() {
 
     let mut sig_max = 0;
 
-    while next_permutation(&mut orig_inputs[..]) {
+    let mut first = true;
+    while first || next_permutation(&mut orig_inputs[..]) {
+        first = false;
         let mut phase = orig_inputs.iter();
         let mut sig_in = 0;
 
