@@ -30,73 +30,90 @@ fn next_permutation<T: PartialOrd>(a: &mut [T]) -> bool {
     true
 }
 
-fn amp_computer(start: usize,
-                instructions: &mut Vec<i32>,
-                input: &mut VecDeque<i32>,
-                output: &mut VecDeque<i32>) -> usize {
-    let mut i = start;
+struct AmpComputer {
+    i: usize,
+    instructions: Vec<i32>,
+    input: VecDeque<i32>,
+    output: VecDeque<i32>,
+}
 
-    loop {
-        let opcode = instructions[i] % 100;
-
-        if opcode == 99 {break;}
-
-
-        let out = match opcode {
-            1 | 2 | 7 | 8 => Some(instructions[i+3] as usize),
-            3 => Some(instructions[i+1] as usize),
-            4 => Some(if instructions[i]/100 % 10 == 1 { i + 1 } else { instructions[i+1] as usize }),
-            5 | 6 => None,
-            _ => panic!("Invalid position! (pos: {}, opcode: {})", i, opcode),
-        };
-
-        match out {
-            Some(out) => instructions[out] = match opcode {
-                1 | 2 => {
-                    let (in1, in2) = get_in(&instructions, i);
-
-                    if opcode == 1 { instructions[in1] + instructions[in2]}
-                        else { instructions[in1] * instructions[in2] }},
-                3 => {
-                    match input.pop_front() {
-                        Some(v) => v,
-                        None => return i,
-                    }
-                },
-                4 => {
-                    //println!("Opcode 4: amp:{}, output: {}", amp, instructions[out]);
-                    output.push_back(instructions[out]);
-                    instructions[out] },
-                7 | 8 => {
-                    let (in1, in2) = get_in(&instructions, i);
-
-                    if (opcode == 7 && instructions[in1] < instructions[in2])
-                        || (opcode == 8 && instructions[in1] == instructions[in2])
-                            { 1 }
-                        else
-                            { 0 }
-                }
-                _ => panic!("Invalid position!"),
-            },
-            None => {},
-        };
-
-        i = match opcode {
-            1 | 2 | 7 | 8 => i + 4,
-            3 | 4 => i + 2,
-            5 | 6 => {
-                let (in1, in2) = get_in(&instructions, i);
-
-                if (opcode == 5 && instructions[in1] != 0) || (opcode == 6 && instructions[in1] == 0)
-                    { instructions[in2] as usize }
-                else
-                    { i + 3 }
-            }
-            _ => panic!("Invalid position!"),
-        };
+impl AmpComputer {
+    fn current_opcode(&self) -> i32 {
+        self.instructions[self.i]
     }
 
-    i
+    fn add_input(&mut self, v: i32) {
+        self.input.push_back(v);
+    }
+
+    fn get_next_output(&mut self) -> Option<i32> {
+        self.output.pop_front()
+    }
+
+    /// Run computer until input is empty (returns true) or opcode 99 is
+    /// found (return false)
+    fn compute(&mut self) -> bool {
+        loop {
+            let opcode = self.instructions[self.i] % 100;
+
+            if opcode == 99 { return false}
+
+
+            let out = match opcode {
+                1 | 2 | 7 | 8 => Some(self.instructions[self.i+3] as usize),
+                3 => Some(self.instructions[self.i+1] as usize),
+                4 => Some(if self.instructions[self.i]/100 % 10 == 1 { self.i + 1 }
+                          else { self.instructions[self.i+1] as usize }),
+                5 | 6 => None,
+                _ => panic!("Invalid position! (pos: {}, opcode: {})", self.i, opcode),
+            };
+
+            match out {
+                Some(out) => self.instructions[out] = match opcode {
+                    1 | 2 => {
+                        let (in1, in2) = get_in(&self.instructions, self.i);
+
+                        if opcode == 1 { self.instructions[in1] + self.instructions[in2]}
+                            else { self.instructions[in1] * self.instructions[in2] }},
+                    3 => {
+                        match self.input.pop_front() {
+                            Some(v) => v,
+                            None => return true,
+                        }
+                    },
+                    4 => {
+                        self.output.push_back(self.instructions[out]);
+                        self.instructions[out] },
+                    7 | 8 => {
+                        let (in1, in2) = get_in(&self.instructions, self.i);
+
+                        if (opcode == 7 && self.instructions[in1] < self.instructions[in2])
+                            || (opcode == 8 && self.instructions[in1] == self.instructions[in2])
+                                { 1 }
+                            else
+                                { 0 }
+                    }
+                    _ => panic!("Invalid position! (pos: {}, opcode: {})", self.i, opcode),
+                },
+                None => {},
+            };
+
+            self.i = match opcode {
+                1 | 2 | 7 | 8 => self.i + 4,
+                3 | 4 => self.i + 2,
+                5 | 6 => {
+                    let (in1, in2) = get_in(&self.instructions, self.i);
+
+                    if (opcode == 5 && self.instructions[in1] != 0)
+                        || (opcode == 6 && self.instructions[in1] == 0)
+                        { self.instructions[in2] as usize }
+                    else
+                        { self.i + 3 }
+                }
+                _ => panic!("Invalid position!"),
+            };
+        }
+    }
 }
 
 fn main() {
@@ -114,34 +131,28 @@ fn main() {
         let mut phase = orig_inputs.iter();
         let mut sig_in = 0;
 
-        let mut starts = (0..5)
-            .map(|_i| 0).collect::<Vec<usize>>();
-        let mut instructions = (0..5)
-            .map(|_i| numbers.clone()).collect::<Vec<_>>();
-        let mut inputs = (0..5)
-            .map(|_i| VecDeque::new()).collect::<Vec<VecDeque<i32>>>();
-        let mut outputs = (0..5)
-            .map(|_i| VecDeque::new()).collect::<Vec<VecDeque<i32>>>();
+        let mut amp_computers = (0..5)
+            .map(|_i| AmpComputer {
+                i: 0,
+                instructions: numbers.clone(),
+                input: VecDeque::new(),
+                output: VecDeque::new() })
+            .collect::<Vec<_>>();
 
         for amp in 0..5 {
-            inputs[amp].push_back(*phase.next().unwrap());
+            amp_computers[amp].add_input(*phase.next().unwrap());
         }
 
-        inputs[0].push_back(sig_in);
+        amp_computers[0].add_input(sig_in);
 
         let mut amp = 0;
-        while instructions[amp][starts[amp]] != 99 {
-            let i = amp_computer(
-                starts[amp],
-                &mut instructions[amp],
-                &mut inputs[amp],
-                &mut outputs[amp]);
+        while amp_computers[amp].current_opcode() != 99 {
+            amp_computers[amp].compute();
 
-            while !outputs[amp].is_empty() {
-                sig_in = outputs[amp].pop_front().unwrap();
-                inputs[(amp + 1) % 5].push_back(sig_in);
+            while let Some(output) = amp_computers[amp].get_next_output() {
+                sig_in = output;
+                amp_computers[(amp + 1) % 5].add_input(sig_in);
             }
-            starts[amp] = i;
             amp = (amp + 1) % 5;
         }
         sig_max = max(sig_max, sig_in);
