@@ -29,7 +29,6 @@ fn main() {
         }
     }
 
-    for j in 0..H {
-        println!("{:?}", pic[j].iter().collect::<String>());
-    }
+    let rows = (0..H).map(|i| pic[i].iter().collect::<String>()).collect::<Vec<_>>();
+    println!("{}", rows.join("\n"));
 }
