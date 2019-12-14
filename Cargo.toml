@@ -6,6 +6,7 @@ authors = ["Adrien Coulier <adrien.coulier@free.fr>"]
 [dependencies]
 itertools = "0.8.2"
 num-integer = "0.1.41"
+regex = "1.3.1"
 
 [[bin]]
 name = "day1"
@@ -102,3 +103,11 @@ path = "src/day12b.rs"
 [[bin]]
 name = "day13"
 path = "src/day13.rs"
+
+[[bin]]
+name = "day13b"
+path = "src/day13b.rs"
+
+[[bin]]
+name = "day14"
+path = "src/day14.rs"
