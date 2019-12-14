@@ -1,7 +1,10 @@
 extern crate regex;
+extern crate num_integer;
 
 use std::io::{self, BufRead};
 use std::collections::HashMap;
+use num_integer:: Integer;
+use std::fmt;
 use regex::Regex;
 
 struct Reaction<'a> {
@@ -9,12 +12,12 @@ struct Reaction<'a> {
     product: (i64, &'a str),
 }
 
-impl<'a> Reaction<'a> {
-    fn scale(&mut self, n: i64) {
-        self.product.0 *= n;
-        for r in self.reactants.iter_mut() {
-            r.0 *= n;
-        }
+impl<'a> fmt::Display for Reaction<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{} => {}",
+               self.reactants.iter().map(|(s, r)| format!("{} {}", s, r))
+               .collect::<Vec<String>>().join(" + "),
+               format!("{} {}", self.product.0, self.product.1))
     }
 }
 
@@ -81,73 +84,45 @@ fn main() {
 
     react_sorted.remove(0);
 
-    react_sorted.reverse();
 
+    let mut ore_react: HashMap<&str, Reaction> = HashMap::new();
 
-    let react_sorted = react_sorted;
+    for product in react_sorted.iter() {
+        let reactants = &reactions[product].reactants;
 
-    let mut cargo_hold: HashMap<&str, i64> = HashMap::new();
-
-    cargo_hold.insert("ORE", 1000000000000);//3
-
-    let mut fuel: i64 = 0;
-
-    let mut i = 0;
-    loop {
-        if i % 1000 == 0 {
-            println!("{}", cargo_hold["ORE"]);
+        if reactants[0].1 == "ORE" {
+            ore_react.insert(product, Reaction {
+                reactants: vec![reactants[0]],
+                product:(reactions[product].product.0, product),
+            });
         }
+        else {
+            let bcoef: i64 = reactants.iter()
+                .map(|(s, r)| s.lcm(&ore_react[r].product.0)/s)
+                .fold(1, |acc, x| acc.lcm(&x));
 
-        i += 1;
+            let n_ore: i64 = reactants.iter()
+                .map(|(s, r)| s*bcoef/ore_react[r].product.0*ore_react[r].reactants[0].0)
+                .sum();
 
-        let mut shopping_list: HashMap<&str, i64> = HashMap::new();
-        shopping_list.insert("FUEL", 1);
+            let n_product = reactions[product].product.0*bcoef;
 
-
-        for product in react_sorted.iter() {
-            let n = match shopping_list.get(product) {
-                Some(n) => *n,
-                None => continue,
-            };
-
-            let in_hold = match cargo_hold.remove(product) {
-                Some(n) => n,
-                None => 0,
-            };
-
-            // Use what's in cargo if it's there
-            if in_hold >= n {
-                *cargo_hold.entry(product).or_insert(0) += in_hold - n;
-                continue;
-            }
-
-            let n = n - in_hold;
-            let reaction = &reactions[product];
-            let sp = reaction.product.0;
-
-            let n_fired = n / sp + if n % sp > 0 { 1 } else { 0 };
-
-            let w = (sp - n % sp) % sp;
-            if w > 0 {
-                *cargo_hold.entry(product).or_insert(0) += w;
-            }
-
-            for (sr, reactant) in reaction.reactants.iter() {
-                if reactant == &"ORE" {
-                    *cargo_hold.entry("ORE").or_insert(0) -= sr*n_fired;
-                }
-                else {
-                    *shopping_list.entry(reactant).or_insert(0) += sr*n_fired;
-                }
-            }
+            ore_react.insert(&product, Reaction {
+                reactants:vec![(n_ore/(n_ore.gcd(&n_product)), "ORE")],
+                product:(n_product/(n_ore.gcd(&n_product)), product),
+            });
         }
-        if cargo_hold["ORE"] < 0 {
-            break;
-        }
-        fuel += 1;
     }
+    println!("{}", ore_react["FUEL"]);
 
-    println!("{:?}", fuel);
-    println!("{:?}", cargo_hold);
+    let fuel_per_ore = (
+        ore_react["FUEL"].product.0,
+        ore_react["FUEL"].reactants[0].0,
+        );
+
+    let cargo_ore: i64 = 1000000000000;
+    println!("Residual ore: {}, fuel: {}", fuel_per_ore.1, fuel_per_ore.0);
+    println!("Total Fuel: {}",
+             ((cargo_ore as f64) * (fuel_per_ore.0 as f64) / (fuel_per_ore.1 as f64)).floor());
 
 }
