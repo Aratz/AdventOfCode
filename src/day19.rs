@@ -187,8 +187,8 @@ fn main() {
 
     let mut res = 0;
 
-    for x in 0..50 {
-        for y in 0..50 {
+    for y in 0..50 {
+        for x in 0..50 {
             let mut computer = AmpComputer {
                         i: 0,
                         instructions: numbers.clone(),
@@ -200,8 +200,12 @@ fn main() {
             computer.add_input(x);
             computer.add_input(y);
             computer.compute();
-            res += computer.get_next_output().unwrap();
+            let v = computer.get_next_output().unwrap();
+            res += v;
+
+            print!("{}", if v==1 {"#"} else {"."});
         }
+        println!("");
     }
 
     println!("{}", res);
