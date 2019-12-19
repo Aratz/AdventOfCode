@@ -10,9 +10,9 @@ fn main() {
 
     let mut max_layer: Option<HashMap<char, u32>> = None;
 
-    let mut pass_it = pass.chunks(w * h);
+    let pass_it = pass.chunks(w * h);
 
-    while let Some(layer) = pass_it.next() {
+    for layer in pass_it {
         let mut c_count: HashMap<char, u32> = HashMap::new();
         for c in layer {
             c_count.entry(*c).and_modify(|e| { *e += 1 }).or_insert(1);

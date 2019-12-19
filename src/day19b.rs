@@ -1,31 +1,7 @@
 extern crate rand;
 
 use std::collections::{VecDeque, HashMap};
-use std::cmp::{min, max};
-
-fn print_map(map: &HashMap<(i64, i64), i64>, pos: (i64, i64)) {
-    let min_x = map.keys().map(|(x, _y)| x).min().unwrap();
-    let max_x = map.keys().map(|(x, _y)| x).max().unwrap();
-    let min_y = map.keys().map(|(_x, y)| y).min().unwrap();
-    let max_y = map.keys().map(|(_x, y)| y).max().unwrap();
-
-    let mut explicit_map = vec![
-        vec![String::from(" "); (max_x - min_x + 1) as usize]; (max_y - min_y + 1) as usize];
-
-    for (key, value) in map.iter() {
-        explicit_map[(key.1 - min_y) as usize][(key.0 - min_x) as usize] = match value {
-            -1 => String::from("█"),
-            v => (v%10).to_string(),
-        };
-    }
-
-    explicit_map[(0 - min_y) as usize][(0 - min_x) as usize] = String::from("S");
-    explicit_map[(pos.1 - min_y) as usize][(pos.0 - min_x) as usize] = String::from("D");
-
-    println!("{}",
-             explicit_map.iter() .map(|row| row.join(""))
-             .collect::<Vec<String>>().join("\n"));
-}
+use std::cmp::{Ordering, min, max};
 
 struct AmpComputer {
     i: usize,
@@ -36,6 +12,7 @@ struct AmpComputer {
     done: bool,
 }
 
+#[allow(dead_code)]
 impl AmpComputer {
     fn current_opcode(&self) -> i64 {
         self.instructions[&self.i]
@@ -97,7 +74,7 @@ impl AmpComputer {
                 _ => panic!("Invalid position! (pos: {}, opcode: {})", self.i, opcode),
             };
 
-            if out.is_some() { self.instructions.entry(out.unwrap()).or_insert(0); }
+            if let Some(out) = out { self.instructions.entry(out).or_insert(0); }
 
             //Get input parameters
             let in1 = match opcode {
@@ -134,8 +111,7 @@ impl AmpComputer {
                         if (opcode == 7 && self.instructions[&in1] < self.instructions[&in2])
                             || (opcode == 8 && self.instructions[&in1] == self.instructions[&in2])
                                 { 1 }
-                            else
-                                { 0 }
+                            else { 0 }
                     },
                     _ => panic!("Invalid position! (pos: {}, opcode: {})", self.i, opcode),
                 }}),
@@ -152,12 +128,9 @@ impl AmpComputer {
                 },
             };
 
-            match new_out {
-                Some(new_out) => {
+            if let Some(new_out) = new_out {
                     self.instructions.entry(out.unwrap()).and_modify(|e| *e = new_out);
-                },
-                None => {},
-            }
+            };
 
             self.i = match opcode {
                 1 | 2 | 7 | 8 => self.i + 4,
@@ -169,8 +142,7 @@ impl AmpComputer {
                     if (opcode == 5 && self.instructions[&in1] != 0)
                         || (opcode == 6 && self.instructions[&in1] == 0)
                         { self.instructions[&in2] as usize }
-                    else
-                        { self.i + 3 }
+                    else { self.i + 3 }
                 }
                 _ => panic!("Invalid position!"),
             };
@@ -200,15 +172,14 @@ fn is_inside(numbers: &HashMap<usize, i64>, x:i64, y:i64) -> bool {
 
 fn main() {
     use std::io::{self, BufRead};
-    let mut rng = rand::thread_rng();
 
     let stdin = io::stdin();
-    let numbers = stdin.lock().lines().next().unwrap().unwrap().split(",")
+    let numbers = stdin.lock().lines().next().unwrap().unwrap().split(',')
         .map(|x| x.parse::<i64>().unwrap()).enumerate().collect::<HashMap<usize, i64>>();
 
     let (mut x_min, mut x_max) = (1123, 1136);
     let (mut y_min, mut y_max) = (1608, 1626);
-    let (mut x, mut y) = (x_min, y_min);
+    let (mut x, mut y);
 
     loop {
         x = (x_min + x_max)/2;
@@ -227,19 +198,19 @@ fn main() {
         println!("{:?} {:?} {} [{:?}, {:?}]", o, (x, y), x - o.0 +1, (x_min, x_max), (y_min, y_max));
 
 
-        if x - o.0 + 1 < 100 {
-            x_min = max(o.0, x_min);
-            y_min = max(y, y_min);
+        match (x - o.0 +1).cmp(&100) {
+            Ordering::Less => {
+                x_min = max(o.0, x_min);
+                y_min = max(y, y_min);
+            }
+            Ordering::Greater => {
+                x_max = min(o.0, x_max);
+                y_max = min(y, y_max);
+            }
+            Ordering::Equal => {
+                println!("({}, {}): {}", o.0, y, o.0*10000 + y);
+                break;
+            }
         }
-        else if x - o.0 + 1 > 100 {
-            x_max = min(o.0, x_max);
-            y_max = min(y, y_max);
-        }
-        else {
-            println!("({}, {}): {}", o.0, y, o.0*10000 + y);
-            break;
-        }
-
-        x = o.0;
     }
 }

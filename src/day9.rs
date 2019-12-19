@@ -8,6 +8,7 @@ struct AmpComputer {
     relative_base: usize,
 }
 
+#[allow(dead_code)]
 impl AmpComputer {
     fn current_opcode(&self) -> i64 {
         self.instructions[&self.i]
@@ -64,7 +65,7 @@ impl AmpComputer {
                 _ => panic!("Invalid position! (pos: {}, opcode: {})", self.i, opcode),
             };
 
-            if out.is_some() { self.instructions.entry(out.unwrap()).or_insert(0); }
+            if let Some(out) = out { self.instructions.entry(out).or_insert(0); }
 
             //Get input parameters
             let in1 = match opcode {
@@ -101,8 +102,7 @@ impl AmpComputer {
                         if (opcode == 7 && self.instructions[&in1] < self.instructions[&in2])
                             || (opcode == 8 && self.instructions[&in1] == self.instructions[&in2])
                                 { 1 }
-                            else
-                                { 0 }
+                            else { 0 }
                     },
                     _ => panic!("Invalid position! (pos: {}, opcode: {})", self.i, opcode),
                 }}),
@@ -119,11 +119,8 @@ impl AmpComputer {
                 },
             };
 
-            match new_out {
-                Some(new_out) => {
-                    self.instructions.entry(out.unwrap()).and_modify(|e| *e = new_out);
-                },
-                None => {},
+            if let Some(new_out) = new_out {
+                self.instructions.entry(out.unwrap()).and_modify(|e| *e = new_out);
             }
 
             self.i = match opcode {
@@ -136,8 +133,7 @@ impl AmpComputer {
                     if (opcode == 5 && self.instructions[&in1] != 0)
                         || (opcode == 6 && self.instructions[&in1] == 0)
                         { self.instructions[&in2] as usize }
-                    else
-                        { self.i + 3 }
+                    else { self.i + 3 }
                 }
                 _ => panic!("Invalid position!"),
             };
@@ -149,13 +145,13 @@ fn main() {
     use std::io::{self, BufRead};
 
     let stdin = io::stdin();
-    let numbers = stdin.lock().lines().next().unwrap().unwrap().split(",")
+    let numbers = stdin.lock().lines().next().unwrap().unwrap().split(',')
         .map(|x| x.parse::<i64>().unwrap()).enumerate().collect::<HashMap<usize, i64>>();
 
 
     let mut computer = AmpComputer {
                 i: 0,
-                instructions: numbers.clone(),
+                instructions: numbers,
                 input: VecDeque::new(),
                 output: VecDeque::new(),
                 relative_base: 0,

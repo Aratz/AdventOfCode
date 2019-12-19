@@ -120,7 +120,7 @@ fn main() {
         ore_react["FUEL"].reactants[0].0,
         );
 
-    let cargo_ore: i64 = 1000000000000;
+    let cargo_ore: i64 = 1_000_000_000_000;
     println!("Residual ore: {}, fuel: {}", fuel_per_ore.1, fuel_per_ore.0);
     println!("Total Fuel: {}",
              ((cargo_ore as f64) * (fuel_per_ore.0 as f64) / (fuel_per_ore.1 as f64)).floor());

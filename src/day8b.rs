@@ -10,13 +10,13 @@ fn main() {
     let pass = stdin.lock().lines().next().unwrap().unwrap()
         .chars().collect::<Vec<_>>();
 
-    let mut pass_it = pass.chunks(W * H);
+    let pass_it = pass.chunks(W * H);
 
-    while let Some(layer) = pass_it.next() {
-        let mut layer = layer.chunks(W).enumerate();
-        while let Some((i, row)) = layer.next() {
-            let mut row = row.iter().enumerate();
-            while let Some((j, c)) = row.next() {
+    for layer in pass_it {
+        let layer = layer.chunks(W).enumerate();
+        for (i, row) in layer {
+            let row = row.iter().enumerate();
+            for (j, c) in row {
                 pic[i][j] = match pic[i][j] {
                     '.' => match c {
                         '0' => ' ',

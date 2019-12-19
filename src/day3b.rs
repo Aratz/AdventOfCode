@@ -1,5 +1,5 @@
-fn distance(p1:&(i32, i32), p2:&(i32, i32)) -> i32 {
-    return (p1.0 - p2.0).abs() + (p1.1 - p2.1).abs();
+fn distance(p1:(i32, i32), p2:(i32, i32)) -> i32 {
+    (p1.0 - p2.0).abs() + (p1.1 - p2.1).abs()
 }
 
 fn convert_to_coordinates<'a, T: Iterator<Item=&'a str>>(moves: T) -> Vec<(i32, i32)> {
@@ -19,7 +19,7 @@ fn convert_to_coordinates<'a, T: Iterator<Item=&'a str>>(moves: T) -> Vec<(i32, 
         res.push(new_pos);
     }
 
-    return res
+    res
 }
 
 fn main() {
@@ -30,7 +30,7 @@ fn main() {
 
     let wires = (0..2).map(
         |_| convert_to_coordinates(
-            stdin.lock().lines().next().unwrap().unwrap().split(",")))
+            stdin.lock().lines().next().unwrap().unwrap().split(',')))
         .collect::<Vec<_>>();
 
     let sections = wires.iter().map(|wire| wire.iter().zip(wire.iter().skip(1))
@@ -40,7 +40,7 @@ fn main() {
     let dist = sections.iter().map(|section| section.iter().scan(
             0, |d, &s| {
                 let d1 = *d;
-                *d = *d + distance(s.0, s.1);
+                *d += distance(*s.0, *s.1);
                 Some(d1)
             }).collect::<Vec<_>>())
         .collect::<Vec<_>>();
@@ -61,8 +61,8 @@ fn main() {
                 let (y1, y2) = (cmp::min(y1, y2), cmp::max(y1, y2));
 
                 if x1 < x && x < x2 && y1 < y && y < y2 {
-                    Some(dist1 + distance(section1.0, &(x, y))
-                        + dist2 + distance(section2.0, &(x, y)))
+                    Some(dist1 + distance(*section1.0, (x, y))
+                        + dist2 + distance(*section2.0, (x, y)))
                 }
                 else {
                     None

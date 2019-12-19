@@ -13,13 +13,13 @@ fn main() {
     let lines = lines; // Make lines immutable again
 
     let direct_orbits: HashMap<&str, &str> = lines.lines()
-        .flat_map(|l| l.split(")"))
+        .flat_map(|l| l.split(')'))
         .tuples().flat_map(|(a, b)| vec![(b, a)]).collect();
 
     let mut graph: HashMap<&str, HashSet<&str>> = HashMap::new();
-    for (a, b) in lines.lines().map(|l| l.split(")").tuples().next().unwrap()) {
-        graph.entry(a).or_insert(HashSet::new()).insert(b);
-        graph.entry(b).or_insert(HashSet::new()).insert(a);
+    for (a, b) in lines.lines().map(|l| l.split(')').tuples().next().unwrap()) {
+        graph.entry(a).or_insert_with(HashSet::new).insert(b);
+        graph.entry(b).or_insert_with(HashSet::new).insert(a);
     }
 
     let (current_pos, stop) = (direct_orbits["YOU"], direct_orbits["SAN"]);

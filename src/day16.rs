@@ -1,7 +1,7 @@
 use std::io::{self, BufRead};
 use std::iter;
 
-fn phase(signal: &Vec<i64>, pattern: &Vec<i64>) -> Vec<i64> {
+fn phase(signal: &[i64], pattern: &[i64]) -> Vec<i64> {
         signal.iter().enumerate()
         .map(|(i, _val)| pattern.iter().flat_map(|c| iter::repeat(c).take(i + 1))
              .cycle().skip(1)
@@ -17,7 +17,7 @@ fn main() {
     let pattern = vec![0, 1, 0, -1];
 
     for _ in 0..100 {
-        let mut tmp = phase(&input, &pattern);
+        let tmp = phase(&input, &pattern);
 
         input = tmp;
     }

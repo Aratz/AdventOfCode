@@ -1,7 +1,7 @@
 use std::cmp::max;
 use std::collections::VecDeque;
 
-fn get_in(data:&Vec<i32>, pointer:usize) -> (usize, usize) {
+fn get_in(data:&[i32], pointer:usize) -> (usize, usize) {
     let in1 = if data[pointer]/100 % 10 == 1 { pointer + 1 }
         else { data[pointer+1] as usize };
     let in2 = if data[pointer]/1000 % 10 == 1 { pointer + 2 }
@@ -68,8 +68,8 @@ impl AmpComputer {
                 _ => panic!("Invalid position! (pos: {}, opcode: {})", self.i, opcode),
             };
 
-            match out {
-                Some(out) => self.instructions[out] = match opcode {
+            if let Some(out) = out {
+                self.instructions[out] = match opcode {
                     1 | 2 => {
                         let (in1, in2) = get_in(&self.instructions, self.i);
 
@@ -90,12 +90,10 @@ impl AmpComputer {
                         if (opcode == 7 && self.instructions[in1] < self.instructions[in2])
                             || (opcode == 8 && self.instructions[in1] == self.instructions[in2])
                                 { 1 }
-                            else
-                                { 0 }
+                            else { 0 }
                     }
                     _ => panic!("Invalid position! (pos: {}, opcode: {})", self.i, opcode),
-                },
-                None => {},
+                };
             };
 
             self.i = match opcode {
@@ -107,8 +105,7 @@ impl AmpComputer {
                     if (opcode == 5 && self.instructions[in1] != 0)
                         || (opcode == 6 && self.instructions[in1] == 0)
                         { self.instructions[in2] as usize }
-                    else
-                        { self.i + 3 }
+                    else { self.i + 3 }
                 }
                 _ => panic!("Invalid position!"),
             };
@@ -122,7 +119,7 @@ fn main() {
     let mut orig_inputs = [5, 6, 7, 8, 9];
 
     let stdin = io::stdin();
-    let numbers = stdin.lock().lines().next().unwrap().unwrap().split(",")
+    let numbers = stdin.lock().lines().next().unwrap().unwrap().split(',')
         .map(|x| x.parse::<i32>().unwrap()).collect::<Vec<i32>>();
 
     let mut sig_max = 0;
@@ -141,8 +138,8 @@ fn main() {
                 output: VecDeque::new() })
             .collect::<Vec<_>>();
 
-        for amp in 0..5 {
-            amp_computers[amp].add_input(*phase.next().unwrap());
+        for computer in amp_computers.iter_mut() {
+            computer.add_input(*phase.next().unwrap());
         }
 
         amp_computers[0].add_input(sig_in);

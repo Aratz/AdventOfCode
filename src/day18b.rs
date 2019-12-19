@@ -1,7 +1,7 @@
 use std::io::{self, BufRead};
 use std::collections::{HashMap, VecDeque, HashSet};
 
-fn bfs(map: &Vec<Vec<char>>, start: (usize, usize)) -> HashMap<char, (u32, i32)> {
+fn bfs(map: &[Vec<char>], start: (usize, usize)) -> HashMap<char, (u32, i32)> {
     let mut dist = HashMap::new();
     let mut queue = VecDeque::new();
     let mut visited = HashSet::new();
@@ -20,7 +20,7 @@ fn bfs(map: &Vec<Vec<char>>, start: (usize, usize)) -> HashMap<char, (u32, i32)>
             let c_n = map[y_n][x_n];
             if  c_n != '#' && !visited.contains(&(x_n, y_n)) {
                 //if current spot is a door, add neighbor with extra key
-                queue.push_back(((x_n, y_n), d + 1, keys | if 'A' <= c && c <= 'Z' {(1 as i32) << (c as u8 - 'A' as u8)} else { 0 }));
+                queue.push_back(((x_n, y_n), d + 1, keys | if 'A' <= c && c <= 'Z' {(1 as i32) << (c as u8 - b'A')} else { 0 }));
             }
         }
     }
@@ -41,25 +41,25 @@ fn shortest_path(
     //println!("{:?} {:?}", pos, keys);
 
     for (i, pos) in pos_4.iter().enumerate() {
-        for (&next_key, &(d, nec_keys)) in dist[&pos].iter()
+        for (&next_key, &(_d, _nec_keys)) in dist[&pos].iter()
             .filter(|(&key, &(_d, nec_keys))| nec_keys & keys == nec_keys // I have the keys to get there
-                    && keys & (1 as i32) << (key as u8 - 'a' as u8) == 0 // This is a new key
+                    && keys & (1 as i32) << (key as u8 - b'a') == 0 // This is a new key
                     ) {
-            let mut new_pos_4 = pos_4.clone();
+            let mut new_pos_4 = pos_4;
             new_pos_4[i] = next_key;
 
-            shortest_path(dist, new_pos_4, keys | (1 as i32)<<(next_key as u8 - 'a' as u8), data);
+            shortest_path(dist, new_pos_4, keys | (1 as i32)<<(next_key as u8 - b'a'), data);
         }
     }
 
     let res = match pos_4.iter().enumerate().filter_map(|(i, pos)| dist[&pos].iter()
         .filter(|(&key, &(_d, nec_keys))| nec_keys & keys == nec_keys // I have the keys to get there
-                && keys & (1 as i32) << (key as u8 - 'a' as u8) == 0 // This is a new key
+                && keys & (1 as i32) << (key as u8 - b'a') == 0 // This is a new key
                 )
         .map(|(&next_key, &(d, _nec_keys))| {
-            let mut new_pos_4 = pos_4.clone();
+            let mut new_pos_4 = pos_4;
             new_pos_4[i] = next_key;
-            d + data[&(new_pos_4, keys | (1 as i32)<<(next_key as u8 - 'a' as u8))]
+            d + data[&(new_pos_4, keys | (1 as i32)<<(next_key as u8 - b'a'))]
         }).min()).min() {
             Some(d) => d,
             None => 0,
@@ -73,13 +73,6 @@ fn main() {
     let map = stdin.lock().lines()
         .map(|l| l.unwrap().chars().collect::<Vec<char>>())
         .collect::<Vec<Vec<char>>>();
-
-    let pos = map.iter().enumerate()
-        .flat_map(|(y, row)| row.iter().enumerate()
-            .filter_map(move |(x, c)| match c {
-                '0'..='3' => Some((x, y)),
-                _ => None,
-            })).collect::<Vec<(usize, usize)>>();
 
     let keys = map.iter().enumerate()
         .flat_map(|(y, row)| row.iter().enumerate()

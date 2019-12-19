@@ -17,17 +17,14 @@ fn main() {
     let base = carta.iter().map(|candidate|
              (
                  carta.iter().filter(|&ast| ast != candidate)
-                 .filter_map(|asteroid| 
+                 .filter(|asteroid| 
                      {
                          let (xx, yy) = (asteroid.0 - candidate.0, asteroid.1 - candidate.1);
                          let p = xx.gcd(&yy);
                          let step = (xx/p, yy/p);
 
-                         match (1..p).map(|p| (candidate.0 + p*step.0, candidate.1 + p*step.1))
-                             .filter(|c| carta.contains(&c)).count() {
-                                 0 => Some(asteroid),
-                                 _ => None,
-                             }
+                         (1..p).map(|p| (candidate.0 + p*step.0, candidate.1 + p*step.1))
+                             .filter(|c| carta.contains(&c)).count() == 0
                      }).count(),
                      candidate,
                      )

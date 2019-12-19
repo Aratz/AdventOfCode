@@ -1,7 +1,6 @@
 extern crate num_integer;
 
 use std::io::{self, BufRead};
-use std::collections::HashSet;
 use num_integer:: Integer;
 
 struct Moon {
@@ -9,6 +8,7 @@ struct Moon {
     v: (i64, i64, i64),
 }
 
+#[allow(dead_code)]
 impl Moon {
     fn x(&self) -> i64 {
         self.coord.0
@@ -71,16 +71,11 @@ fn main() {
 
     let mut moons = stdin.lock().lines()
         .map(|l| {
-            let coord = l.unwrap().split(" ").map(|v| v.parse::<i64>().unwrap())
+            let coord = l.unwrap().split(' ').map(|v| v.parse::<i64>().unwrap())
                 .collect::<Vec<i64>>();
             Moon {coord: (coord[0], coord[1], coord[2]), v: (0, 0, 0)}
         })
         .collect::<Vec<Moon>>();
-
-    let init_state = ((moons[0].coord, moons[0].v),
-        (moons[1].coord, moons[1].v),
-        (moons[2].coord, moons[2].v),
-        (moons[3].coord, moons[3].v));
 
     let init_state = (
         (moons[0].x(), moons[1].x(), moons[2].x(), moons[3].x(),
@@ -134,7 +129,7 @@ fn main() {
             rz = s;
         }
 
-        if s%100000 == 0 {
+        if s%100_000 == 0 {
             println!("Searching (s: {}): {} {} {}", s, rx, ry, rz);
         }
     }

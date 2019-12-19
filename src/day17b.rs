@@ -1,30 +1,4 @@
-extern crate rand;
-
 use std::collections::{VecDeque, HashMap};
-
-fn print_map(map: &HashMap<(i64, i64), i64>, pos: (i64, i64)) {
-    let min_x = map.keys().map(|(x, _y)| x).min().unwrap();
-    let max_x = map.keys().map(|(x, _y)| x).max().unwrap();
-    let min_y = map.keys().map(|(_x, y)| y).min().unwrap();
-    let max_y = map.keys().map(|(_x, y)| y).max().unwrap();
-
-    let mut explicit_map = vec![
-        vec![String::from(" "); (max_x - min_x + 1) as usize]; (max_y - min_y + 1) as usize];
-
-    for (key, value) in map.iter() {
-        explicit_map[(key.1 - min_y) as usize][(key.0 - min_x) as usize] = match value {
-            -1 => String::from("█"),
-            v => (v%10).to_string(),
-        };
-    }
-
-    explicit_map[(0 - min_y) as usize][(0 - min_x) as usize] = String::from("S");
-    explicit_map[(pos.1 - min_y) as usize][(pos.0 - min_x) as usize] = String::from("D");
-
-    println!("{}",
-             explicit_map.iter() .map(|row| row.join(""))
-             .collect::<Vec<String>>().join("\n"));
-}
 
 struct AmpComputer {
     i: usize,
@@ -35,6 +9,7 @@ struct AmpComputer {
     done: bool,
 }
 
+#[allow(dead_code)]
 impl AmpComputer {
     fn current_opcode(&self) -> i64 {
         self.instructions[&self.i]
@@ -96,7 +71,7 @@ impl AmpComputer {
                 _ => panic!("Invalid position! (pos: {}, opcode: {})", self.i, opcode),
             };
 
-            if out.is_some() { self.instructions.entry(out.unwrap()).or_insert(0); }
+            if let Some(out) = out { self.instructions.entry(out).or_insert(0); }
 
             //Get input parameters
             let in1 = match opcode {
@@ -133,8 +108,7 @@ impl AmpComputer {
                         if (opcode == 7 && self.instructions[&in1] < self.instructions[&in2])
                             || (opcode == 8 && self.instructions[&in1] == self.instructions[&in2])
                                 { 1 }
-                            else
-                                { 0 }
+                            else { 0 }
                     },
                     _ => panic!("Invalid position! (pos: {}, opcode: {})", self.i, opcode),
                 }}),
@@ -151,11 +125,8 @@ impl AmpComputer {
                 },
             };
 
-            match new_out {
-                Some(new_out) => {
-                    self.instructions.entry(out.unwrap()).and_modify(|e| *e = new_out);
-                },
-                None => {},
+            if let Some(new_out) = new_out {
+                self.instructions.entry(out.unwrap()).and_modify(|e| *e = new_out);
             }
 
             self.i = match opcode {
@@ -168,8 +139,7 @@ impl AmpComputer {
                     if (opcode == 5 && self.instructions[&in1] != 0)
                         || (opcode == 6 && self.instructions[&in1] == 0)
                         { self.instructions[&in2] as usize }
-                    else
-                        { self.i + 3 }
+                    else { self.i + 3 }
                 }
                 _ => panic!("Invalid position!"),
             };
@@ -179,10 +149,9 @@ impl AmpComputer {
 
 fn main() {
     use std::io::{self, BufRead};
-    let mut rng = rand::thread_rng();
 
     let stdin = io::stdin();
-    let mut numbers = stdin.lock().lines().next().unwrap().unwrap().split(",")
+    let mut numbers = stdin.lock().lines().next().unwrap().unwrap().split(',')
         .map(|x| x.parse::<i64>().unwrap()).enumerate().collect::<HashMap<usize, i64>>();
 
     numbers.insert(0, 2);
@@ -192,7 +161,7 @@ fn main() {
 
     let mut computer = AmpComputer {
                 i: 0,
-                instructions: numbers.clone(),
+                instructions: numbers,
                 input: VecDeque::new(),
                 output: VecDeque::new(),
                 relative_base: 0,
@@ -200,36 +169,36 @@ fn main() {
     };
 
     let rout = "A,B,A,C,A,B,A,C,B,C\n";
-    let A = "R,4,L,12,L,8,R,4\n";
-    let B = "L,8,R,10,R,10,R,6\n";
-    let C = "R,4,R,10,L,12\n";
+    let a = "R,4,L,12,L,8,R,4\n";
+    let b = "L,8,R,10,R,10,R,6\n";
+    let c = "R,4,R,10,L,12\n";
     let vid = "n\n";
 
-    for c in rout.chars(){
-        computer.add_input(c as i64);
+    for ch in rout.chars(){
+        computer.add_input(ch as i64);
     }
-    for c in A.chars(){
-        computer.add_input(c as i64);
+    for ch in a.chars(){
+        computer.add_input(ch as i64);
     }
-    for c in B.chars(){
-        computer.add_input(c as i64);
+    for ch in b.chars(){
+        computer.add_input(ch as i64);
     }
-    for c in C.chars(){
-        computer.add_input(c as i64);
+    for ch in c.chars(){
+        computer.add_input(ch as i64);
     }
-    for c in vid.chars(){
-        computer.add_input(c as i64);
+    for ch in vid.chars(){
+        computer.add_input(ch as i64);
     }
 
     computer.compute();
 
-    while let Some(c) = computer.get_next_output() {
-        if c < 100 {
-            let c = (c as u8) as char;
-            print!("{}", c);
+    while let Some(ch) = computer.get_next_output() {
+        if ch < 100 {
+            let ch = (ch as u8) as char;
+            print!("{}", ch);
         }
         else {
-            println!("{}", c);
+            println!("{}", ch);
         }
     }
 }

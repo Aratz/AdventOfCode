@@ -16,7 +16,8 @@ fn two_digits(n: &str) -> bool {
         count = new_count;
         i += 1;
     }
-    if count == 2 { true } else { false }
+
+    count == 2
 }
 fn never_decrease(n: &str) -> bool {
     let mut n_sorted = n.chars().collect::<Vec<_>>();
@@ -29,7 +30,7 @@ fn main() {
 
     let stdin = io::stdin();
     let (a, b) = {
-        let range = stdin.lock().lines().next().unwrap().unwrap().split("-")
+        let range = stdin.lock().lines().next().unwrap().unwrap().split('-')
         .map(|x| x.parse::<u32>().unwrap()).collect::<Vec<_>>();
         (range[0], range[1])
     };

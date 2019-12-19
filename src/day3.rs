@@ -15,7 +15,7 @@ fn convert_to_coordinates<'a, T: Iterator<Item=&'a str>>(moves: T) -> Vec<(i32, 
         res.push(new_pos);
     }
 
-    return res
+    res
 }
 
 fn main() {
@@ -25,9 +25,9 @@ fn main() {
     let stdin = io::stdin();
 
     let wire1 = convert_to_coordinates(
-        stdin.lock().lines().next().unwrap().unwrap().split(","));
+        stdin.lock().lines().next().unwrap().unwrap().split(','));
     let wire2 = convert_to_coordinates(
-        stdin.lock().lines().next().unwrap().unwrap().split(","));
+        stdin.lock().lines().next().unwrap().unwrap().split(','));
 
     let res = wire1.iter().zip(wire1.iter().skip(1)).filter_map(
         |section1| wire2.iter().zip(wire2.iter().skip(1)).filter_map(

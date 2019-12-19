@@ -20,7 +20,7 @@ fn main() {
     stdin.lock().read_to_string(&mut lines).unwrap();
 
     let direct_orbits: HashMap<&str, &str> = lines.lines()
-        .flat_map(|l| l.split(")"))
+        .flat_map(|l| l.split(')'))
         .tuples().map(|(a, b)| (b, a)).collect();
 
     println!("{}",

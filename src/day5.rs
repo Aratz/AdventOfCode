@@ -4,7 +4,7 @@ fn main() {
     let input = 1;
 
     let stdin = io::stdin();
-    let mut numbers = stdin.lock().lines().next().unwrap().unwrap().split(",")
+    let mut numbers = stdin.lock().lines().next().unwrap().unwrap().split(',')
         .map(|x| x.parse::<i32>().unwrap()).collect::<Vec<i32>>();
 
     let mut i = 0;

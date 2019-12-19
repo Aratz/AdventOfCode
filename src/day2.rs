@@ -2,7 +2,7 @@ fn main() {
     use std::io::{self, BufRead};
 
     let stdin = io::stdin();
-    let mut numbers = stdin.lock().lines().next().unwrap().unwrap().split(",")
+    let mut numbers = stdin.lock().lines().next().unwrap().unwrap().split(',')
         .map(|x| x.parse::<usize>().unwrap()).collect::<Vec<usize>>();
 
     let mut i = 0;

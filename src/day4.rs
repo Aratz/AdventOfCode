@@ -14,7 +14,7 @@ fn main() {
 
     let stdin = io::stdin();
     let (a, b) = {
-        let range = stdin.lock().lines().next().unwrap().unwrap().split("-")
+        let range = stdin.lock().lines().next().unwrap().unwrap().split('-')
         .map(|x| x.parse::<u32>().unwrap()).collect::<Vec<_>>();
         (range[0], range[1])
     };

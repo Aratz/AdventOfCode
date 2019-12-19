@@ -5,6 +5,7 @@ struct Moon {
     v: (i64, i64, i64),
 }
 
+#[allow(dead_code)]
 impl Moon {
     fn x(&self) -> i64 {
         self.coord.0
@@ -67,7 +68,7 @@ fn main() {
 
     let mut moons = stdin.lock().lines()
         .map(|l| {
-            let coord = l.unwrap().split(" ").map(|v| v.parse::<i64>().unwrap())
+            let coord = l.unwrap().split(' ').map(|v| v.parse::<i64>().unwrap())
                 .collect::<Vec<i64>>();
             Moon {coord: (coord[0], coord[1], coord[2]), v: (0, 0, 0)}
         })
@@ -75,7 +76,7 @@ fn main() {
 
     let steps = 1000;
 
-    for s in 0..steps {
+    for _ in 0..steps {
         let dv = moons.iter().enumerate()
             .map(|(i, m1)| moons.iter().enumerate().filter(|(j, _m2)| i != *j)
                  .map(|(_i, m2)| (

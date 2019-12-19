@@ -1,5 +1,5 @@
 use std::collections::{VecDeque, HashMap};
-use std::fs::File;
+use std::cmp::{Ordering};
 
 struct AmpComputer {
     i: usize,
@@ -10,6 +10,7 @@ struct AmpComputer {
     done: bool,
 }
 
+#[allow(dead_code)]
 impl AmpComputer {
     fn current_opcode(&self) -> i64 {
         self.instructions[&self.i]
@@ -71,7 +72,7 @@ impl AmpComputer {
                 _ => panic!("Invalid position! (pos: {}, opcode: {})", self.i, opcode),
             };
 
-            if out.is_some() { self.instructions.entry(out.unwrap()).or_insert(0); }
+            if let Some(out) = out { self.instructions.entry(out).or_insert(0); }
 
             //Get input parameters
             let in1 = match opcode {
@@ -108,8 +109,7 @@ impl AmpComputer {
                         if (opcode == 7 && self.instructions[&in1] < self.instructions[&in2])
                             || (opcode == 8 && self.instructions[&in1] == self.instructions[&in2])
                                 { 1 }
-                            else
-                                { 0 }
+                            else { 0 }
                     },
                     _ => panic!("Invalid position! (pos: {}, opcode: {})", self.i, opcode),
                 }}),
@@ -126,11 +126,8 @@ impl AmpComputer {
                 },
             };
 
-            match new_out {
-                Some(new_out) => {
-                    self.instructions.entry(out.unwrap()).and_modify(|e| *e = new_out);
-                },
-                None => {},
+            if let Some(new_out) = new_out {
+                self.instructions.entry(out.unwrap()).and_modify(|e| *e = new_out);
             }
 
             self.i = match opcode {
@@ -143,8 +140,7 @@ impl AmpComputer {
                     if (opcode == 5 && self.instructions[&in1] != 0)
                         || (opcode == 6 && self.instructions[&in1] == 0)
                         { self.instructions[&in2] as usize }
-                    else
-                        { self.i + 3 }
+                    else { self.i + 3 }
                 }
                 _ => panic!("Invalid position!"),
             };
@@ -153,13 +149,11 @@ impl AmpComputer {
 }
 
 fn main() {
-    use std::io::{self, BufRead, BufReader};
+    use std::io::{self, BufRead};
 
     let stdin = io::stdin();
 
-    let f = File::open("data/day13.in").unwrap();
-    let f = BufReader::new(f);
-    let mut numbers = f.lines().next().unwrap().unwrap().split(",")
+    let mut numbers = stdin.lock().lines().next().unwrap().unwrap().split(',')
         .map(|x| x.parse::<i64>().unwrap()).enumerate().collect::<HashMap<usize, i64>>();
 
     numbers.insert(0, 2);
@@ -168,7 +162,7 @@ fn main() {
 
     let mut computer = AmpComputer {
                 i: 0,
-                instructions: numbers.clone(),
+                instructions: numbers,
                 input: VecDeque::new(),
                 output: VecDeque::new(),
                 relative_base: 0,
@@ -184,8 +178,6 @@ fn main() {
     let mut ball = (0, 0);
     let mut paddle = (0, 0);
 
-    let mut sc = 0;
-
     while !computer.done {
         computer.compute();
         let (x, y, tile_id) = (
@@ -195,7 +187,7 @@ fn main() {
             );
 
         match (x, y, tile_id) {
-            (Some(-1), Some(0), Some(score)) => {sc = score; println!("Score: {}", score)},
+            (Some(-1), Some(0), Some(score)) => println!("Score: {}", score),
             (Some(x), Some(y), Some(tile_id)) => screen[y as usize][x as usize] = match tile_id {
                 0 => ' ',
                 1 => '+',
@@ -208,14 +200,10 @@ fn main() {
                 let rows = (0..H).map(|i| screen[i].iter().collect::<String>())
                     .collect::<Vec<_>>();
                 println!("{}", rows.join("\n"));
-                let input = if ball.0 > paddle.0 {
-                    1
-                }
-                else if ball.0 < paddle.0 {
-                    -1
-                }
-                else {
-                    0
+                let input = match ball.0.cmp(&paddle.0) {
+                    Ordering::Greater => 1,
+                    Ordering::Less => -1,
+                    Ordering::Equal => 0,
                 };
                 computer.add_input(input)
             },
@@ -230,13 +218,13 @@ fn main() {
             computer.get_next_output(),
             );
         match (x, y, tile_id) {
-            (Some(-1), Some(0), Some(score)) => {sc = score; println!("Score: {}", score)},
+            (Some(-1), Some(0), Some(score)) => println!("Score: {}", score),
             (Some(x), Some(y), Some(tile_id)) => screen[y as usize][x as usize] = match tile_id {
                 0 => ' ',
                 1 => '+',
                 2 => '#',
-                3 => {paddle = (x, y); '='},
-                4 => {ball = (x, y); 'o'},
+                3 => '=',
+                4 => 'o',
                 _ => panic!("Unrecognized tile!"),
             },
             (None, _, _) =>{
