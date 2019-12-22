@@ -1,12 +1,11 @@
 #[macro_use] extern crate lazy_static;
 extern crate regex;
 
+const N:i64 = 119315717514047;
+const K: i64 = 101741582076661;
+
 use regex::Regex;
 use std::io::{self, BufRead};
-use std::collections::HashMap;
-
-const N: i64 = 119315717514047;
-const I: i64 = 2020;
 
 #[derive(Debug)]
 enum Technique {
@@ -38,21 +37,6 @@ fn parse_action(action: &str) -> Technique {
     panic!("No match found!")
 }
 
-fn quick_exp(a: i64, n: i64) -> i64 {
-    let mut res = 1;
-    let mut a = a;
-    let mut n = n;
-
-    while n > 0 {
-        if n % 2 == 1 {
-            res = mult_noverflow(res, a);
-        }
-        a = mult_noverflow(a, a);
-        n /= 2;
-    }
-
-    res
-}
 fn mult_noverflow(a: i64, b: i64) -> i64 {
     let mut res = 0;
     let mut a = a;
@@ -69,47 +53,28 @@ fn mult_noverflow(a: i64, b: i64) -> i64 {
     res
 }
 
-fn fast_p(i: i64, l: i64, data: &mut HashMap<(i64, i64), i64>, process: &[Technique]) {
-    if data.contains_key(&(i, l)) {println!("HIT!"); return };
+fn main() {
+    let k = N - K;
 
-    let mut j = i;
+    let stdin = io::stdin();
 
-    if l == 1 {
+    let process: Vec<Technique> = stdin.lock().lines()
+        .map(|l| parse_action(&l.unwrap())).collect();
+
+    let mut i = 2020;
+
+    for l in 0..k {
+        if l%1000000 == 0 {
+            println!("{}", l);
+        }
         for p in process.iter() {
             match p {
-                Technique::DealStack => { j = N - j - 1; },
-                Technique::Cut(n) => { j = (N + j + n)%N; },
-                Technique::DealInc(n) => { j = mult_noverflow(j, quick_exp(*n, N-2)); },
+                Technique::DealStack => { i = N - i - 1; }, // OK
+                Technique::Cut(n) => { i = (N + i - n)%N; }, // OK
+                Technique::DealInc(n) => { i = mult_noverflow(i, *n); }, // OK
             }
         }
     }
-    else {
-        fast_p(j, l/2, data, process);
-        j = data[&(j, l/2)];
-        fast_p(j, l/2, data, process);
-        j = data[&(j, l/2)];
-        if l % 2 == 1 {
-            fast_p(j, 1, data, process);
-            j = data[&(j, 1)];
-        }
-    }
-    data.insert((i, l), j);
-}
 
-
-fn main() {
-    let stdin = io::stdin();
-
-    let mut process: Vec<Technique> = stdin.lock().lines()
-        .map(|l| parse_action(&l.unwrap())).collect();
-
-    process.reverse();
-
-    let mut i = I;
-    let l = 101741582076661;
-
-    let mut data: HashMap<(i64, i64), i64> = HashMap::new();
-
-    fast_p(i, l, &mut data, &process);
-    println!("{}", data[&(i, l)]);
+    println!("{:?}", i);
 }
