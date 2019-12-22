@@ -3,6 +3,10 @@ extern crate regex;
 
 use regex::Regex;
 use std::io::{self, BufRead};
+use std::collections::HashMap;
+
+const N: i64 = 119315717514047;
+const I: i64 = 2020;
 
 #[derive(Debug)]
 enum Technique {
@@ -34,22 +38,22 @@ fn parse_action(action: &str) -> Technique {
     panic!("No match found!")
 }
 
-fn quick_exp(a: i64, n: i64, N: i64) -> i64 {
+fn quick_exp(a: i64, n: i64) -> i64 {
     let mut res = 1;
     let mut a = a;
     let mut n = n;
 
     while n > 0 {
         if n % 2 == 1 {
-            res = mult_noverflow(res, a, N);
+            res = mult_noverflow(res, a);
         }
-        a = mult_noverflow(a, a, N);
+        a = mult_noverflow(a, a);
         n /= 2;
     }
 
     res
 }
-fn mult_noverflow(a: i64, b: i64, N: i64) -> i64 {
+fn mult_noverflow(a: i64, b: i64) -> i64 {
     let mut res = 0;
     let mut a = a;
     let mut b = b;
@@ -65,11 +69,35 @@ fn mult_noverflow(a: i64, b: i64, N: i64) -> i64 {
     res
 }
 
+fn fast_p(i: i64, l: i64, data: &mut HashMap<(i64, i64), i64>, process: &[Technique]) {
+    if data.contains_key(&(i, l)) {println!("HIT!"); return };
+
+    let mut j = i;
+
+    if l == 1 {
+        for p in process.iter() {
+            match p {
+                Technique::DealStack => { j = N - j - 1; },
+                Technique::Cut(n) => { j = (N + j + n)%N; },
+                Technique::DealInc(n) => { j = mult_noverflow(j, quick_exp(*n, N-2)); },
+            }
+        }
+    }
+    else {
+        fast_p(j, l/2, data, process);
+        j = data[&(j, l/2)];
+        fast_p(j, l/2, data, process);
+        j = data[&(j, l/2)];
+        if l % 2 == 1 {
+            fast_p(j, 1, data, process);
+            j = data[&(j, 1)];
+        }
+    }
+    data.insert((i, l), j);
+}
+
+
 fn main() {
-    const N: i64 = 119315717514047;
-
-    const I: i64 = 2020;
-
     let stdin = io::stdin();
 
     let mut process: Vec<Technique> = stdin.lock().lines()
@@ -78,15 +106,10 @@ fn main() {
     process.reverse();
 
     let mut i = I;
+    let l = 101741582076661;
 
-    for k in (0..101741582076661 as i64) {
-        for p in process.iter() {
-            match p {
-                Technique::DealStack => { i = N - i - 1; },
-                Technique::Cut(n) => { i = (N + i + n)%N; },
-                Technique::DealInc(n) => { i = mult_noverflow(i, quick_exp(*n, N-2, N), N); },
-            }
-        }
-    }
-    println!("{}", i);
+    let mut data: HashMap<(i64, i64), i64> = HashMap::new();
+
+    fast_p(i, l, &mut data, &process);
+    println!("{}", data[&(i, l)]);
 }
