@@ -1,0 +1,10 @@
+[package]
+name = "Advent_of_Code_2020"
+version = "0.1.0"
+authors = ["Adrien Coulier <adrien.coulier@free.fr>"]
+
+[dependencies]
+
+[[bin]]
+name = "day1"
+path = "src/day1.rs"
