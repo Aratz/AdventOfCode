@@ -1,0 +1,100 @@
+[package]
+name = "Advent_of_Code_2018"
+version = "0.1.0"
+authors = ["Adrien Coulier <adrien.coulier@free.fr>"]
+
+[[bin]]
+name = "day1"
+path = "src/day1.rs"
+
+[[bin]]
+name = "day1b"
+path = "src/day1b.rs"
+
+[[bin]]
+name = "day2"
+path = "src/day2.rs"
+
+[[bin]]
+name = "day2b"
+path = "src/day2b.rs"
+
+[[bin]]
+name = "day3"
+path = "src/day3.rs"
+
+[[bin]]
+name = "day3b"
+path = "src/day3b.rs"
+
+[[bin]]
+name = "day4"
+path = "src/day4.rs"
+
+[[bin]]
+name = "day4b"
+path = "src/day4b.rs"
+
+[[bin]]
+name = "day5"
+path = "src/day5.rs"
+
+[[bin]]
+name = "day5b"
+path = "src/day5b.rs"
+
+[[bin]]
+name = "day6"
+path = "src/day6.rs"
+
+[[bin]]
+name = "day6b"
+path = "src/day6b.rs"
+
+[[bin]]
+name = "day7"
+path = "src/day7.rs"
+
+[[bin]]
+name = "day7b"
+path = "src/day7b.rs"
+
+[[bin]]
+name = "day8"
+path = "src/day8.rs"
+
+[[bin]]
+name = "day8b"
+path = "src/day8b.rs"
+
+[[bin]]
+name = "day9"
+path = "src/day9.rs"
+
+[[bin]]
+name = "day9b"
+path = "src/day9b.rs"
+
+[[bin]]
+name = "day11"
+path = "src/day11.rs"
+
+[[bin]]
+name = "day11b"
+path = "src/day11b.rs"
+
+[[bin]]
+name = "day14"
+path = "src/day14.rs"
+
+[[bin]]
+name = "day14b"
+path = "src/day14b.rs"
+
+[[bin]]
+name = "day16"
+path = "src/day16.rs"
+
+[[bin]]
+name = "day16b"
+path = "src/day16b.rs"
