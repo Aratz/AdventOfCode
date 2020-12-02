@@ -4,6 +4,9 @@ version = "0.1.0"
 authors = ["Adrien Coulier <adrien.coulier@free.fr>"]
 
 [dependencies]
+regex = "1.4.2"
+
+
 
 [[bin]]
 name = "day1"
@@ -12,3 +15,7 @@ path = "src/day1.rs"
 [[bin]]
 name = "day1b"
 path = "src/day1b.rs"
+
+[[bin]]
+name = "day2"
+path = "src/day2.rs"
