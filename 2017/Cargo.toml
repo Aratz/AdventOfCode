@@ -1,10 +1,11 @@
 [package]
-name = "Adven Calendar"
+name = "Advent_Calendar"
 version = "0.1.0"
 authors = ["Adrien Coulier <adrien.coulier@free.fr>"]
 
 [dependencies]
 rulinalg="0.4.2"
+regex = "1.4.2"
 
 [[bin]]
 name = "day1"
@@ -53,6 +54,10 @@ path = "src/day6b.rs"
 [[bin]]
 name = "day7"
 path = "src/day7.rs"
+
+[[bin]]
+name = "day7b"
+path = "src/day7b.rs"
 
 [[bin]]
 name = "day8"
