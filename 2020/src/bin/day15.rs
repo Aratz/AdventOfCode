@@ -38,3 +38,32 @@ fn main() {
     println!("Solution A-part: {}", day15::solve(2_020, &numbers));
     println!("Solution B-part: {}", day15::solve(30_000_000, &numbers));
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_solve_2020() {
+        assert_eq!(day15::solve(2_020, &vec![0, 3, 6]), 436);
+
+        assert_eq!(day15::solve(2_020, &vec![1, 3, 2]),    1);
+        assert_eq!(day15::solve(2_020, &vec![2, 1, 3]),   10);
+        assert_eq!(day15::solve(2_020, &vec![1, 2, 3]),   27);
+        assert_eq!(day15::solve(2_020, &vec![2, 3, 1]),   78);
+        assert_eq!(day15::solve(2_020, &vec![3, 2, 1]),  438);
+        assert_eq!(day15::solve(2_020, &vec![3, 1, 2]), 1_836);
+    }
+
+    #[test]
+    fn test_solve_3e7() {
+        assert_eq!(day15::solve(30_000_000, &vec![0, 3, 6]),   175_594);
+
+        assert_eq!(day15::solve(30_000_000, &vec![1, 3, 2]),     2_578);
+        assert_eq!(day15::solve(30_000_000, &vec![2, 1, 3]), 3_544_142);
+        assert_eq!(day15::solve(30_000_000, &vec![1, 2, 3]),   261_214);
+        assert_eq!(day15::solve(30_000_000, &vec![2, 3, 1]), 6_895_259);
+        assert_eq!(day15::solve(30_000_000, &vec![3, 2, 1]),        18);
+        assert_eq!(day15::solve(30_000_000, &vec![3, 1, 2]),       362);
+    }
+}
