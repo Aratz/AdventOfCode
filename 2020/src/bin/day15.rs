@@ -8,27 +8,25 @@ mod day15 {
     use std::collections::HashMap;
 
     pub fn solve(n: usize, numbers: &Vec<usize>) -> usize {
-        let mut numbers = numbers.clone();
-        let mut last_spoken: HashMap<usize, (Option<usize>, Option<usize>)> = HashMap::new();
+        let mut last_spoken: HashMap<usize, usize> = HashMap::new();
 
-        for i in 0..numbers.len() {
-            last_spoken.insert(numbers[i], (Some(i+1), None));
+        for (i, n) in numbers.iter().take(numbers.len() - 1).enumerate() {
+            last_spoken.insert(numbers[i], i + 1);
         }
+
+        let mut last = *numbers.last().unwrap();
 
         for i in numbers.len()..n {
-            let ith_spoken = match last_spoken.get(&numbers[i-1]).unwrap() {
-                (Some(i1), Some(i2)) => { i1 - i2 },
-                (Some(_), None) => { 0 },
-                _ => { panic!("Malformed last spoken map!"); },
+            let ith_spoken = match last_spoken.get(&last) {
+                Some(j) => { i - j },
+                None => 0,
             };
 
-            numbers.push(ith_spoken);
-            last_spoken.entry(ith_spoken)
-                .and_modify(|e| *e =  (Some(i+1), e.0))
-                .or_insert((Some(i+1), None));
+            last_spoken.insert(last, i);
+            last = ith_spoken;
         }
 
-        *numbers.last().unwrap()
+        last
     }
 }
 
