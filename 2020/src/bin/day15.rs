@@ -35,6 +35,6 @@ fn main() {
         .split(",").map(|n| n.parse().unwrap()).collect();
 
 
-    println!("Solution A-part: {}", day15::solve(2020, &numbers));
-    println!("Solution B-part: {}", day15::solve(30000000, &numbers));
+    println!("Solution A-part: {}", day15::solve(2_020, &numbers));
+    println!("Solution B-part: {}", day15::solve(30_000_000, &numbers));
 }
