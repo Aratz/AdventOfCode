@@ -1,3 +1,7 @@
+#![feature(test)]
+
+extern crate test;
+
 use std::io::{self, BufRead};
 
 mod day15 {
@@ -42,6 +46,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use test::Bencher;
 
     #[test]
     fn test_solve_2020() {
@@ -65,5 +70,10 @@ mod tests {
         assert_eq!(day15::solve(30_000_000, &vec![2, 3, 1]), 6_895_259);
         assert_eq!(day15::solve(30_000_000, &vec![3, 2, 1]),        18);
         assert_eq!(day15::solve(30_000_000, &vec![3, 1, 2]),       362);
+    }
+
+    #[bench]
+    fn bench_solve_1e5(b: &mut Bencher) {
+        b.iter(|| day15::solve(300_000, &vec![0, 3, 6]));
     }
 }
