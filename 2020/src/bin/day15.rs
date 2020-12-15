@@ -5,24 +5,22 @@ extern crate test;
 use std::io::{self, BufRead};
 
 mod day15 {
-    use std::collections::HashMap;
-
     pub fn solve(n: usize, numbers: &Vec<usize>) -> usize {
-        let mut last_spoken: HashMap<usize, usize> = HashMap::new();
+        let mut last_spoken = vec![None; n];
 
-        for (i, n) in numbers.iter().take(numbers.len() - 1).enumerate() {
-            last_spoken.insert(numbers[i], i + 1);
+        for (i, &n) in numbers.iter().take(numbers.len() - 1).enumerate() {
+            last_spoken[n]  = Some(i + 1);
         }
 
         let mut last = *numbers.last().unwrap();
 
         for i in numbers.len()..n {
-            let ith_spoken = match last_spoken.get(&last) {
+            let ith_spoken = match last_spoken[last] {
                 Some(j) => { i - j },
                 None => 0,
             };
 
-            last_spoken.insert(last, i);
+            last_spoken[last] = Some(i);
             last = ith_spoken;
         }
 
