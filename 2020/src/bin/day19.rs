@@ -4,12 +4,66 @@ mod day19 {
     use std::collections::HashMap;
     use regex::Regex;
 
+    const N_MATCH: usize = 6;
+
     #[derive(Clone, Debug)]
     pub enum Rule {
         Simple(String),
         Complex(Vec<Vec<usize>>),
     }
 
+    fn generate_regex_b(start: usize, mut rules: &mut HashMap<usize, Rule>) {
+        let mut origin = rules[&start].clone();
+        let reg = match start { 
+            8 => {
+                generate_regex_b(42, &mut rules);
+                let rule42 = rules[&42].clone();
+                match rule42 {
+                    Rule::Simple(s) => { format!("({})+", s) },
+                    Rule::Complex(_) => unreachable!(),
+                }
+            }
+            11 => {
+                generate_regex_b(42, &mut rules);
+                let rule42 = match rules[&42].clone() {
+                    Rule::Simple(s) => { s },
+                    Rule::Complex(_) => unreachable!(),
+                };
+                generate_regex_b(31, &mut rules);
+                let rule31 = match rules[&31].clone() {
+                    Rule::Simple(s) => { s },
+                    Rule::Complex(_) => unreachable!(),
+                };
+
+                let vec_reg: Vec<String> = (1..=N_MATCH).map(|i| format!(
+                        r"({}){{{}}}({}){{{}}}", rule42, i, rule31, i))
+                    .collect();
+                format!("({})", vec_reg.join("|"))
+            }
+            _ => match origin {
+                Rule::Simple(s) => { s },
+                Rule::Complex(subrules) => {
+                    let vec_reg:Vec<String> = subrules.iter().map(
+                        |seq| {
+                            let vec_seq:Vec<String> = seq.iter().map(
+                                |&rule| {
+                                    generate_regex_b(rule, &mut rules);
+                                    let subrule = rules[&rule].clone();
+                                    match subrule {
+                                        Rule::Simple(s) => { s },
+                                        Rule::Complex(_) => unreachable!(),
+                                    }
+                                }).collect();
+                            vec_seq.join("")
+                        }).collect();
+                    format!("({})", vec_reg.join("|"))
+                },
+            }
+        };
+
+        origin = Rule::Simple(reg);
+        rules.insert(start, origin);
+    }
     fn generate_regex(start: usize, mut rules: &mut HashMap<usize, Rule>) {
         let mut origin = rules[&start].clone();
         let reg = match origin {
@@ -38,6 +92,19 @@ mod day19 {
 
     pub fn solve_a(rules: &mut HashMap<usize, Rule>, messages: &Vec<String>) -> usize {
         generate_regex(0, rules);
+
+        let reg_string = match &rules[&0] {
+            Rule::Simple(s) => { s },
+            Rule::Complex(_) => unreachable!(),
+        };
+
+        let reg_rules = Regex::new(&format!(r"^{}$", reg_string)).unwrap();
+
+        messages.iter().filter(|msg| reg_rules.is_match(msg)).count()
+    }
+
+    pub fn solve_b(rules: &mut HashMap<usize, Rule>, messages: &Vec<String>) -> usize {
+        generate_regex_b(0, rules);
 
         let reg_string = match &rules[&0] {
             Rule::Simple(s) => { s },
@@ -80,6 +147,7 @@ mod day19 {
 fn main() {
     use regex::Regex;
     use std::io::{self, Read};
+    use std::collections::HashMap;
 
     let reg_rule = Regex::new(r#"(?P<id>\d+): ((?P<complex>(\d+ ?)+(\| (\d+ ?)+)?)|"(?P<simple>[ab])")"#).unwrap();
     let reg_msg = Regex::new(r"([ab]{2,})").unwrap();
@@ -91,7 +159,7 @@ fn main() {
         stdin_lock.read_to_string(&mut buffer).unwrap();
     }
 
-    let mut rules = reg_rule.captures_iter(&buffer).map(
+    let rules: HashMap<usize, day19::Rule> = reg_rule.captures_iter(&buffer).map(
             |c| (
                 c.name("id").unwrap().as_str().parse().unwrap(),
                 match c.name("simple") {
@@ -110,5 +178,9 @@ fn main() {
         |c| c.get(1).unwrap().as_str().into()
         ).collect();
 
-    println!("Solution A-part: {}", day19::solve_a(&mut rules, &messages));
+    let mut rules_a = rules.clone(); 
+    let mut rules_b = rules.clone(); 
+
+    println!("Solution A-part: {}", day19::solve_a(&mut rules_a, &messages));
+    println!("Solution B-part: {}", day19::solve_b(&mut rules_b, &messages));
 }
