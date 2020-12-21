@@ -3,7 +3,8 @@ extern crate regex;
 mod day21 {
     use std::collections::{HashMap, HashSet};
 
-    pub fn solve_a(food_list: &Vec<(Vec<String>, Vec<String>)>) -> usize {
+    pub fn solve_ab(food_list: &Vec<(Vec<String>, Vec<String>)>)
+            -> (usize, String) {
         let mut potential_allergens: HashMap<String, HashSet<String>> = HashMap::new();
         let mut unique_ingredients: HashSet<String> = HashSet::new();
 
@@ -22,15 +23,44 @@ mod day21 {
             }
         }
 
+        let mut allergen_map: HashMap<String, String> = HashMap::new();
+        let mut identified_ingredients: HashSet<String> = HashSet::new();
+        let mut allergens: Vec<String> = potential_allergens.keys().map(|s| s.into()).collect();
+        allergens.sort_by_key(|k| (potential_allergens[k].len()));
+        allergens.reverse();
+
+        while let Some(allergen) = allergens.pop() {
+            let ing = potential_allergens[&allergen].iter().filter(
+                    |ing| !identified_ingredients.contains(*ing))
+                .next().unwrap();
+            allergen_map.insert(
+                allergen.into(),
+                ing.into(),
+                );
+            identified_ingredients.insert(ing.into());
+            allergens.sort_by_key(|k| potential_allergens[k].iter()
+                                  .filter(|ing| !identified_ingredients.contains(*ing))
+                                  .count());
+            allergens.reverse();
+        }
+
+        let mut allergens: Vec<String> = potential_allergens.keys().map(|s| s.into()).collect();
+        allergens.sort();
+        let dangerous_ingredients: Vec<String> = allergens.iter().map(
+            |alln| allergen_map[alln].clone()).collect();
+
         let safe_ingredients: HashSet<String> = unique_ingredients.iter().filter(
             |ing| potential_allergens.values().all(
                 |allerg_ingrts| !allerg_ingrts.contains(*ing))
             ).map(|s| s.into()).collect();
 
-        food_list.iter().map(
-            |(ingredients, _allergens)| ingredients.iter().filter(
-                |ing| safe_ingredients.contains(*ing)).count()
-            ).sum()
+        (
+            food_list.iter().map(
+                |(ingredients, _allergens)| ingredients.iter().filter(
+                    |ing| safe_ingredients.contains(*ing)).count()
+                ).sum(),
+            dangerous_ingredients.join(","),
+            )
     }
 
     #[cfg(test)]
@@ -58,7 +88,7 @@ mod day21 {
                     ),
             ];
 
-            assert_eq!(solve_a(&food_list), 5);
+            assert_eq!(solve_ab(&food_list).0, 5);
 
         }
     }
@@ -86,5 +116,7 @@ fn main() {
                 )
         ).collect();
 
-    println!("Solution A-part: {}", day21::solve_a(&food_list));
+    let (sol_a, sol_b) = day21::solve_ab(&food_list);
+    println!("Solution A-part: {}", sol_a);
+    println!("Solution B-part: {}", sol_b);
 }
