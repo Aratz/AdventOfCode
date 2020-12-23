@@ -1,62 +1,85 @@
 mod day23 {
-    use std::collections::VecDeque;
+    use std::collections::{VecDeque, HashMap};
 
-    pub fn solve_a(mut cups: usize, n: usize) -> usize {
-        let mut circle = VecDeque::new();
+    fn iter_circle(mut cups: usize, n_moves: usize, n_cups: usize) -> HashMap<usize, usize> {
+        let mut circle: HashMap<usize, usize> = HashMap::new();
         let mut staging = VecDeque::new();
         let base = 10;
 
         //populate queue
+        let mut last_digit = 10;
+        let first_digit = cups % base;
         while cups != 0 {
-            circle.push_back(cups % base);
+            circle.insert(cups % base, last_digit);
+            last_digit = cups % base;
             cups /= base;
         }
+        if n_cups == 9 {
+            circle.insert(first_digit, last_digit);
+        }
+        else {
+            circle.insert(n_cups, last_digit);
+        }
 
-        let v = circle.pop_back().unwrap();
-        circle.push_front(v);
+        for i in 10..n_cups {
+            circle.insert(i, i + 1);
+        }
 
-        let base = 9;
+
+        let base = n_cups;
+        let mut source = last_digit;
         //apply move
-        for _ in 0..n {
+        for _ in 0..n_moves {
         //  - compute dest
-            let source = *circle.front().unwrap();
-            let mut dest = (circle.front().unwrap() - 1 + base - 1) % base + 1;
+            let mut dest = (source - 1 + base - 1) % base + 1;
         //  - pop and stack next three and adjust dest
             for _ in 0..3 {
-                staging.push_back(circle.pop_back().unwrap());
+                //source.next = last
+                staging.push_back(circle[&source]);
+                let source_next = circle[&circle[&source]];
+                circle.insert(source, source_next);
             }
             while staging.iter().any(|&v| v == dest) {
                 dest = (dest - 1 + base - 1) % base + 1;
             }
-        //  - find dest
-            while *circle.front().unwrap() != dest {
-                let v = circle.pop_back().unwrap();
-                circle.push_front(v);
-            }
         //  - push back cups
-            while let Some(v) = staging.pop_back() {
-                circle.push_back(v);
+            let mut dest_last = circle[&dest];
+            let mut prev = dest;
+            while let Some(v) = staging.pop_front() {
+                circle.insert(prev, v);
+                prev = v;
             }
-        //  - go back to source
-            while *circle.front().unwrap() != source {
-                let v = circle.pop_back().unwrap();
-                circle.push_front(v);
-            }
+            circle.insert(prev, dest_last);
 
         // Step forward
-            let v = circle.pop_back().unwrap();
-            circle.push_front(v);
-
+            source = circle[&source];
         }
 
-        while *circle.front().unwrap() != 1 {
-            let v = circle.pop_back().unwrap();
-            circle.push_front(v);
+        //let mut dbg_vec = Vec::new();
+        //let mut source = 3;
+        //for _ in 0..20 {
+        //    source = circle[&source];
+        //    dbg_vec.push(source);
+        //}
+        //dbg!(&dbg_vec);
+
+        circle
+    }
+
+    pub fn solve_a(cups: usize, n_moves: usize) -> usize {
+        let circle = iter_circle(cups, n_moves, 9);
+        let mut res = Vec::new();
+        let mut source = circle[&1];
+        while source != 1 {
+            res.push(source);
+            source = circle[&source];
         }
+        res.iter().rev().enumerate().map(|(i, v)| v*10usize.pow(i as u32)).sum::<usize>()
+    }
 
-        circle.pop_front().unwrap();
-
-        circle.iter().enumerate().map(|(i, v)| v*10usize.pow(i as u32)).sum::<usize>()
+    pub fn solve_b(cups: usize, n_moves: usize, n_cups: usize) -> usize {
+        let circle = iter_circle(cups, n_moves, n_cups);
+        circle[&1] * circle[&circle[&1]]
     }
 
     #[cfg(test)]
@@ -68,6 +91,11 @@ mod day23 {
             assert_eq!(solve_a(389125467, 1), 54673289);
             assert_eq!(solve_a(389125467, 10), 92658374);
             assert_eq!(solve_a(389125467, 100), 67384529);
+        }
+
+        #[test]
+        fn test_solve_b() {
+            assert_eq!(solve_b(389125467, 10_000_000, 1_000_000), 149245887792);
         }
     }
 }
@@ -82,6 +110,9 @@ fn main() {
         stdin_lock.read_to_string(&mut buffer).unwrap();
     }
 
-    println!("Solution A-part: {}", day23::solve_a(buffer.trim().parse().unwrap(), 100));
+    let start_cfg = buffer.trim().parse().unwrap();
+
+    println!("Solution A-part: {}", day23::solve_a(start_cfg, 100));
+    println!("Solution B-part: {}", day23::solve_b(start_cfg, 10_000_000, 1_000_000));
 
 }
