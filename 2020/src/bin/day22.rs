@@ -3,10 +3,10 @@ extern crate regex;
 mod day22 {
     use std::collections::{VecDeque, HashSet};
 
-    pub fn solve_a(cards1 : &Vec<usize>, cards2: &Vec<usize>) -> usize {
+    pub fn solve_a(cards1 : &[usize], cards2: &[usize]) -> usize {
         let mut decks = vec![
-            VecDeque::from(cards1.clone()),
-            VecDeque::from(cards2.clone()),
+            VecDeque::from(cards1.to_owned()),
+            VecDeque::from(cards2.to_owned()),
         ];
 
         while !decks[0].is_empty() && !decks[1].is_empty() {
@@ -21,14 +21,12 @@ mod day22 {
         decks[winner].iter().rev().enumerate().map(|(i, c)| (i + 1) * c).sum::<usize>()
     }
 
-    fn play_rec(
-        cards1: &Vec<usize>,
-        cards2: &Vec<usize>,
-        ) -> (usize, usize) {
+    #[allow(clippy::collapsible_if)]
+    fn play_rec(cards1: &[usize], cards2: &[usize]) -> (usize, usize) {
 
         let mut decks = vec![
-            VecDeque::from(cards1.clone()),
-            VecDeque::from(cards2.clone()),
+            VecDeque::from(cards1.to_owned()),
+            VecDeque::from(cards2.to_owned()),
         ];
 
         let mut previously_played: HashSet<Vec<VecDeque<usize>>> = HashSet::new();
@@ -46,8 +44,8 @@ mod day22 {
             let cards = vec![decks[0].pop_front().unwrap(), decks[1].pop_front().unwrap()];
             let winner = if cards[0] <= decks[0].len() && cards[1] <= decks[1].len() {
                 play_rec(
-                    &decks[0].iter().take(cards[0]).map(|v| *v).collect(),
-                    &decks[1].iter().take(cards[1]).map(|v| *v).collect(),
+                    &decks[0].iter().take(cards[0]).copied().collect::<Vec<usize>>(),
+                    &decks[1].iter().take(cards[1]).copied().collect::<Vec<usize>>(),
                     //&decks[0].make_contiguous()[0..cards[0]].to_vec(),
                     //&decks[1].make_contiguous()[0..cards[1]].to_vec(),
                     //This creates card doubles, I don't really understand why :(
@@ -69,7 +67,7 @@ mod day22 {
             )
     }
 
-    pub fn solve_b(cards1 : &Vec<usize>, cards2: &Vec<usize>) -> usize {
+    pub fn solve_b(cards1 : &[usize], cards2: &[usize]) -> usize {
         play_rec(cards1, cards2).1
     }
 

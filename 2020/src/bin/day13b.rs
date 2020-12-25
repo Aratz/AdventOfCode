@@ -5,6 +5,7 @@ use std::io::{self, BufRead};
 /// Returns (gcd(a, b), (s, t))
 ///
 /// This is an implementation of the [extended Euclidian algorithm](https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm)
+#[allow(clippy::many_single_char_names)]
 fn xgcd(a: i64, b: i64) -> (i64, (i64, i64)) {
     let (mut old_r, mut r) = (a, b);
     let (mut old_s, mut s) = (1, 0);
@@ -36,7 +37,7 @@ fn main() {
 
     let _current_time:i32 = lines.next().unwrap().unwrap().parse().unwrap();
     let bus_table = lines.next().unwrap().unwrap()
-        .split(",")
+        .split(',')
         .enumerate()
         .filter_map(|(i, v)| match v.parse() {
             Ok(v) => Some((i as i64, v)),

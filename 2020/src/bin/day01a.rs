@@ -12,7 +12,7 @@ fn main() {
     let (v1, v2) = numbers
         .iter()
         .flat_map(|v1| numbers.iter().clone().map(move |v2| (v1, v2)))
-        .filter(|(&v1, &v2)| v1 + v2 == target).next().unwrap();
+        .find(|(&v1, &v2)| v1 + v2 == target).unwrap();
 
 
     println!("{}", v1*v2);

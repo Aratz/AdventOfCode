@@ -90,7 +90,7 @@ mod day19 {
         rules.insert(start, origin);
     }
 
-    pub fn solve_a(rules: &mut HashMap<usize, Rule>, messages: &Vec<String>) -> usize {
+    pub fn solve_a(rules: &mut HashMap<usize, Rule>, messages: &[String]) -> usize {
         generate_regex(0, rules);
 
         let reg_string = match &rules[&0] {
@@ -103,7 +103,7 @@ mod day19 {
         messages.iter().filter(|msg| reg_rules.is_match(msg)).count()
     }
 
-    pub fn solve_b(rules: &mut HashMap<usize, Rule>, messages: &Vec<String>) -> usize {
+    pub fn solve_b(rules: &mut HashMap<usize, Rule>, messages: &[String]) -> usize {
         generate_regex_b(0, rules);
 
         let reg_string = match &rules[&0] {
@@ -167,19 +167,19 @@ fn main() {
                     None => {
                         day19::Rule::Complex(c.name("complex").unwrap().as_str()
                             .split(" | ").map(
-                                |subrules| subrules.trim().split(" ").map(
+                                |subrules| subrules.trim().split(' ').map(
                                     |rule| rule.parse().unwrap()).collect()
                                 ).collect())
                     },
                 })
         ).collect();
 
-    let messages = reg_msg.captures_iter(&buffer).map(
+    let messages: Vec<String> = reg_msg.captures_iter(&buffer).map(
         |c| c.get(1).unwrap().as_str().into()
         ).collect();
 
     let mut rules_a = rules.clone(); 
-    let mut rules_b = rules.clone(); 
+    let mut rules_b = rules;
 
     println!("Solution A-part: {}", day19::solve_a(&mut rules_a, &messages));
     println!("Solution B-part: {}", day19::solve_b(&mut rules_b, &messages));

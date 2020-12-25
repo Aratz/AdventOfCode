@@ -12,7 +12,7 @@ fn main() {
     let instructions = stdin.lock().lines()
         .map(|instruction| {
             let raw_instruction = instruction.unwrap()
-                .split(" ")
+                .split(' ')
                 .map(|s| s.to_string())
                 .collect::<Vec<_>>();
 

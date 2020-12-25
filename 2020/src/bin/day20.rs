@@ -39,12 +39,7 @@ mod day20 {
 
     impl NWSE {
         fn new(n: String, w: String, s: String, e: String) -> Self {
-            Self {
-                n: n,
-                w: w,
-                s: s,
-                e: e,
-            }
+            Self { n, w, s, e }
         }
     }
 
@@ -54,10 +49,10 @@ mod day20 {
 
         fn into_iter(self) -> Self::IntoIter {
             vec![
-                (Side::N(self.n.clone()), self.n.clone()),
-                (Side::W(self.w.clone()), self.w.clone()),
-                (Side::S(self.s.clone()), self.s.clone()),
-                (Side::E(self.e.clone()), self.e.clone()),
+                (Side::N(self.n.clone()), self.n),
+                (Side::W(self.w.clone()), self.w),
+                (Side::S(self.s.clone()), self.s),
+                (Side::E(self.e.clone()), self.e),
             ].into_iter()
         }
     }
@@ -124,7 +119,7 @@ mod day20 {
         }
     }
 
-    fn get_borders(content: &Vec<Vec<char>>) -> NWSE {
+    fn get_borders(content: &[Vec<char>]) -> NWSE {
         let n = content[0].iter().collect();
         let w = content.iter().rev().map(|row| row[0]).collect();
         let s = content[SIDE_LENGTH-1].iter().rev().collect();
@@ -142,9 +137,9 @@ mod day20 {
     }
 
     impl AssemblyLine {
-        fn new(tiles: &Vec<Tile>) -> Self {
+        fn new(tiles: &[Tile]) -> Self {
             let tiles: HashMap<u64, Tile> = tiles.iter().map(|t| (t.id, t.clone())).collect();
-            let queue = VecDeque::from(tiles.keys().map(|k| *k).collect::<Vec<u64>>());
+            let queue = VecDeque::from(tiles.keys().copied().collect::<Vec<u64>>());
             Self {
                 tiles,
                 border_pool: HashMap::new(),
@@ -157,9 +152,9 @@ mod day20 {
         fn find_match(&mut self, new_tile_id: u64) -> bool {
             let new_tile = self.tiles.get_mut(&new_tile_id).unwrap();
             for (new_side, border) in new_tile.borders.clone().into_iter() {
-                match self.border_pool.get(&border.chars().rev().collect::<String>()) {
-                    Some((fixed_side, id)) => { //Set rotation, set coordinates, add to pool, then continue
-
+                if let Some((fixed_side, id)) = self.border_pool
+                            .get(&border.chars().rev().collect::<String>()) {
+                            //Set rotation, set coordinates, add to pool, then continue
                         // Set rotation
                         match fixed_side.align_rotation(&new_side) {
                             0 => {},
@@ -190,16 +185,14 @@ mod day20 {
 
                         // add to pool
                         for (s, border) in new_tile.borders.clone().into_iter() {
-                            self.border_pool.insert(border.into(), (s, new_tile.id));
+                            self.border_pool.insert(border, (s, new_tile.id));
                         }
 
                         return true
-                    }
-                    None => { },
                 }
             }
 
-            return false;
+            false
         }
 
         fn assemble(&mut self) {
@@ -210,7 +203,7 @@ mod day20 {
             let first_tile = &self.tiles[&self.queue.pop_front().unwrap()];
             self.assembled.insert(first_tile.id, (0, 0));
             for (s, border) in first_tile.borders.clone().into_iter() {
-                self.border_pool.insert(border.into(), (s, first_tile.id));
+                self.border_pool.insert(border, (s, first_tile.id));
             }
 
             while let Some(new_tile_id) = self.queue.pop_front() {
@@ -258,7 +251,7 @@ mod day20 {
         }
     }
 
-    pub fn solve_a(tiles: &Vec<Tile>) -> u64 {
+    pub fn solve_a(tiles: &[Tile]) -> u64 {
         let mut assembly_line = AssemblyLine::new(tiles);
         assembly_line.assemble();
 
@@ -297,7 +290,7 @@ mod day20 {
     }
 
 
-    pub fn solve_b(tiles: &Vec<Tile>) -> usize {
+    pub fn solve_b(tiles: &[Tile]) -> usize {
         let mut assembly_line = AssemblyLine::new(tiles);
         let full_picture = assembly_line.get_full_picture();
         let pattern = vec![
@@ -364,7 +357,7 @@ fn main() {
 
     let re_tile = Regex::new(r"Tile (?P<id>\d+):\n(?P<tile>([#\.]{10}\n?){10})").unwrap();
 
-    let tiles = re_tile.captures_iter(&buffer).map(
+    let tiles: Vec<_> = re_tile.captures_iter(&buffer).map(
         |c| day20::Tile::new(
             c.name("id").unwrap().as_str().parse().unwrap(),
             c.name("tile").unwrap().as_str().lines().map(|l| l.chars().collect()).collect(),

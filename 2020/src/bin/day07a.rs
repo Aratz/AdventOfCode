@@ -25,7 +25,7 @@ fn main() {
         for child in children.iter() {
             possible_containers.entry(child.to_string())
                 .and_modify(|e| e.push(parent.to_string()))
-                .or_insert(vec![parent.to_string()]);
+                .or_insert_with(|| vec![parent.to_string()]);
         }
     }
 
@@ -35,14 +35,11 @@ fn main() {
     queue.push_back("shiny gold".to_string());
 
     while let Some(bag) = queue.pop_front() {
-        match possible_containers.get(&bag) {
-            Some(containers) => {
-                for bag in containers.iter() {
-                    unique_containers.insert(bag.to_string());
-                    queue.push_back(bag.to_string());
-                }
-            },
-            None => { },
+        if let Some(containers) = possible_containers.get(&bag) {
+            for bag in containers.iter() {
+                unique_containers.insert(bag.to_string());
+                queue.push_back(bag.to_string());
+            }
         };
     }
 

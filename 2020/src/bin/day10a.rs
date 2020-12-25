@@ -11,7 +11,7 @@ fn main() {
     ratings.insert(0, 0);
     ratings.push(ratings.iter().max().unwrap() + 3);
 
-    ratings.sort();
+    ratings.sort_unstable();
     let diffs = ratings.iter().skip(1).zip(ratings.iter())
         .map(|(a1, a2)| a1 - a2).collect::<Vec<_>>();
 

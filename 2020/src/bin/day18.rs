@@ -81,7 +81,7 @@ mod day18 {
                     "+" => {},
                     "*" => { return Ok(acc * compute_regexpr_b(parsed_expr)?);},
                     ")" => { return Ok(acc); },
-                    _ => { return Err(String::from(format!("Malformed expression (two numbers in a row({}))", token))); },
+                    _ => { return Err(format!("Malformed expression (two numbers in a row({}))", token)); },
                 }
             },
             None => { return Ok(acc); },

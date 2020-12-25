@@ -49,7 +49,7 @@ mod day17b {
     impl FromStr for Grid {
         type Err = ();
         fn from_str(s: &str) -> Result<Self, Self::Err> {
-            Ok(Grid(s.split("\n").zip(0..)
+            Ok(Grid(s.split('\n').zip(0..)
                 .flat_map(
                     |(row, i)| row.chars().zip(0..)
                         .filter(|(c, _j)| *c=='#')

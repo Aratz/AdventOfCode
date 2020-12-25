@@ -1,7 +1,7 @@
 use std::io::{self, BufRead};
 
 mod day15 {
-    pub fn solve(n: usize, numbers: &Vec<usize>) -> usize {
+    pub fn solve(n: usize, numbers: &[usize]) -> usize {
         let mut last_spoken = vec![None; n];
 
         for (i, &n) in numbers.iter().take(numbers.len() - 1).enumerate() {
@@ -28,7 +28,7 @@ fn main() {
     let stdin = io::stdin();
 
     let numbers: Vec<usize> = stdin.lock().lines().next().unwrap().unwrap()
-        .split(",").map(|n| n.parse().unwrap()).collect();
+        .split(',').map(|n| n.parse().unwrap()).collect();
 
 
     println!("Solution A-part: {}", day15::solve(2_020, &numbers));

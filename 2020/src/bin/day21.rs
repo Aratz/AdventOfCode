@@ -3,7 +3,7 @@ extern crate regex;
 mod day21 {
     use std::collections::{HashMap, HashSet};
 
-    pub fn solve_ab(food_list: &Vec<(Vec<String>, Vec<String>)>)
+    pub fn solve_ab(food_list: &[(Vec<String>, Vec<String>)])
             -> (usize, String) {
         let mut potential_allergens: HashMap<String, HashSet<String>> = HashMap::new();
         let mut unique_ingredients: HashSet<String> = HashSet::new();
@@ -16,7 +16,7 @@ mod day21 {
                             let other = ingredients.clone().into_iter().collect();
                             *set = set.intersection(&other).map(|s| s.into()).collect();
                         })
-                    .or_insert(ingredients.clone().into_iter().collect());
+                    .or_insert_with(|| ingredients.clone().into_iter().collect());
                 for ingredient in ingredients.iter() {
                     unique_ingredients.insert(ingredient.into());
                 }
@@ -30,11 +30,11 @@ mod day21 {
         allergens.reverse();
 
         while let Some(allergen) = allergens.pop() {
-            let ing = potential_allergens[&allergen].iter().filter(
+            let ing = potential_allergens[&allergen].iter().find(
                     |ing| !identified_ingredients.contains(*ing))
-                .next().unwrap();
+                .unwrap();
             allergen_map.insert(
-                allergen.into(),
+                allergen,
                 ing.into(),
                 );
             identified_ingredients.insert(ing.into());
@@ -107,9 +107,9 @@ fn main() {
         stdin_lock.read_to_string(&mut buffer).unwrap();
     }
 
-    let food_list = re_food.captures_iter(&buffer).map(
+    let food_list: Vec<_> = re_food.captures_iter(&buffer).map(
         |capt| (
-            capt.name("ingredients").unwrap().as_str().split(" ")
+            capt.name("ingredients").unwrap().as_str().split(' ')
                 .map(|s| s.into()).collect(),
             capt.name("allergens").unwrap().as_str().split(", ")
                 .map(|s| s.into()).collect()

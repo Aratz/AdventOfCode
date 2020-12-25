@@ -10,7 +10,7 @@ fn main() {
     ratings.insert(0, 0);
     ratings.push(ratings.iter().max().unwrap() + 3);
 
-    ratings.sort();
+    ratings.sort_unstable();
 
     let mut n_arr: Vec<i64> = vec![0; ratings.len()];
 

@@ -13,7 +13,7 @@ fn main() {
         .iter()
         .flat_map(|v1| numbers.iter().clone().map(move |v2| (v1, v2)))
         .flat_map(|(v1, v2)| numbers.iter().clone().map(move |v3| (v1, v2, v3)))
-        .filter(|(&v1, &v2, &v3)| v1 + v2 + v3 == target).next().unwrap();
+        .find(|(&v1, &v2, &v3)| v1 + v2 + v3 == target).unwrap();
 
 
     println!("{}", v1*v2*v3);

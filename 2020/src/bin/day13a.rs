@@ -6,7 +6,7 @@ fn main() {
 
     let current_time:i32 = lines.next().unwrap().unwrap().parse().unwrap();
     let bus_table = lines.next().unwrap().unwrap()
-        .split(",")
+        .split(',')
         .map(|v| v.parse())
         .collect::<Vec<Result<i32, _>>>();
 

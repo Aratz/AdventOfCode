@@ -44,7 +44,7 @@ mod day24 {
         }
     }
 
-    fn seed_tiles(tiles: &Vec<String>) -> Floor {
+    fn seed_tiles(tiles: &[String]) -> Floor {
         let coord_map = vec![
             ("e",  ( 0,  1)),
             ("se", ( 1,  1)),
@@ -69,13 +69,13 @@ mod day24 {
             ).iter().filter(|&(_k, &v)| v).map(|(k, _v)| *k).collect())
     }
 
-    pub fn solve_a(tiles: &Vec<String>) -> usize {
+    pub fn solve_a(tiles: &[String]) -> usize {
         let flipped_tiles = seed_tiles(tiles);
 
         flipped_tiles.n_tiles()
     }
 
-    pub fn solve_b(tiles: &Vec<String>, n_days: usize) -> usize {
+    pub fn solve_b(tiles: &[String], n_days: usize) -> usize {
         let mut flipped_tiles = seed_tiles(tiles);
 
         for _ in 0..n_days {
@@ -112,7 +112,7 @@ fn main() {
 
     let stdin = io::stdin();
 
-    let input = stdin.lock().lines().map(|s| s.unwrap()).collect();
+    let input: Vec<String> = stdin.lock().lines().map(|s| s.unwrap()).collect();
 
     println!("Solution A-part: {}", day24::solve_a(&input));
     println!("Solution B-part: {}", day24::solve_b(&input, 100));

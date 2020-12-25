@@ -25,7 +25,7 @@ mod day16 {
         }
     }
 
-    pub fn solve_a(ranges: &Vec<FieldRange>, tickets: &Vec<Vec<i64>>) -> i64 {
+    pub fn solve_a(ranges: &[FieldRange], tickets: &[Vec<i64>]) -> i64 {
         tickets.iter().flat_map(
             |ticket| ticket.iter().filter(
                 |&&field| ranges.iter().all(
@@ -35,7 +35,7 @@ mod day16 {
             ).sum()
     }
 
-    fn valid_tickets<'a>(ranges: &'_ Vec<FieldRange>, tickets: &'a Vec<Vec<i64>>) -> Vec<&'a Vec<i64>> {
+    fn valid_tickets<'a>(ranges: &'_ [FieldRange], tickets: &'a [Vec<i64>]) -> Vec<&'a Vec<i64>> {
         tickets.iter().filter(
             |ticket| ticket.iter().all(
                 |&field| ranges.iter().any(
@@ -45,7 +45,7 @@ mod day16 {
             ).collect()
     }
 
-    pub fn solve_b(ranges: &Vec<FieldRange>, tickets: &Vec<Vec<i64>>)
+    pub fn solve_b(ranges: &[FieldRange], tickets: &[Vec<i64>])
             -> HashMap<String, usize> {
 
         let tickets = valid_tickets(ranges, tickets);
@@ -62,9 +62,9 @@ mod day16 {
 
         for (field, possibilities) in possible_fields.iter() {
             // Assume there is only one possible field after filtering
-            let valid_field = possibilities.iter().filter(
+            let valid_field = possibilities.iter().find(
                 |&i| fields.values().find(|&v| v == i).is_none()
-                ).next().unwrap();
+                ).unwrap();
             fields.insert(field.name.clone(), *valid_field);
         }
 
@@ -101,7 +101,7 @@ fn main() {
         ).collect();
 
     let nearby_tickets: Vec<Vec<i64>> = re_ticket.captures_iter(raw_nearby_tickets)
-        .map(|t| t.name("ticket").unwrap().as_str().split(",")
+        .map(|t| t.name("ticket").unwrap().as_str().split(',')
              .map(|n| n.parse().unwrap()).collect()
              ).collect();
 
@@ -119,7 +119,7 @@ fn main() {
     ];
 
     let my_ticket: Vec<i64> = re_ticket.captures(raw_fields).unwrap()
-        .name("ticket").unwrap().as_str().split(",")
+        .name("ticket").unwrap().as_str().split(',')
         .map(|n| n.parse().unwrap()).collect();
 
     println!("Solution B-part: {}",

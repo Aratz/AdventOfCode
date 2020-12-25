@@ -24,7 +24,7 @@ fn validate_passport(passport: &regex::Captures) -> Option<()> {
 
     passport.name("pid")?;
 
-    return Some(());
+    Some(())
 }
 
 fn main() {

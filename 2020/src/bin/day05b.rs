@@ -9,11 +9,11 @@ fn main() {
             _ => panic!("Code Error!"),
         }).rev().enumerate().map(|(i, d)| d<<i).sum()).collect::<Vec<u32>>();
 
-    seats.sort();
+    seats.sort_unstable();
 
     let seats = seats;
 
-    let my_seat = seats.iter().zip(seats.iter().skip(1)).filter(|(&s0, &s1)| s0 != s1 - 1).next().unwrap();
+    let my_seat = seats.iter().zip(seats.iter().skip(1)).find(|(&s0, &s1)| s0 != s1 - 1).unwrap();
 
     println!("{:?}", my_seat.0+1);
 

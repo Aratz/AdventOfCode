@@ -17,7 +17,7 @@ fn main() {
     let res: usize = re.captures_iter(&buffer)
         .map(|c| c.iter().next().unwrap().unwrap().as_str()) // Extract match
         .map(|forms| forms
-             .split("\n")
+             .split('\n')
              .flat_map(|form| form.chars())
              .collect::<HashSet<_>>()
              .len())

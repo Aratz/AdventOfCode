@@ -16,11 +16,12 @@ impl Eq for WaitingArea {}
 #[allow(dead_code)]
 impl WaitingArea {
     fn are_valid_coord(&self, i: i32, j: i32) -> bool {
-        return i >= 0
+        i >= 0
             && j >= 0
             && i < self.seats.len() as i32
             && j < self.seats[i as usize].len() as i32
     }
+
     fn count_neighbors(&self, i: usize, j: usize)
       -> usize {
         let mut count = 0;

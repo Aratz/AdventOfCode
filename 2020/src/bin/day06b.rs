@@ -17,12 +17,12 @@ fn main() {
     let res: usize = re.captures_iter(&buffer)
         .map(|c| c.iter().next().unwrap().unwrap().as_str()) // Extract match
         .map(|forms| forms
-             .split("\n")
+             .split('\n')
              .map(|form| form.chars().collect::<HashSet<_>>())
              .collect::<Vec<_>>().iter().rev().skip(1)
              .fold(
                  ('a'..='z').collect::<HashSet<_>>(),
-                 |a, b| a.intersection(&b).map(|c| *c).collect::<HashSet<_>>()
+                 |a, b| a.intersection(&b).copied().collect::<HashSet<_>>()
                  )
              .len()
              )
