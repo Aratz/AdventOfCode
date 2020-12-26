@@ -1,10 +1,19 @@
 mod day13 {
     use std::collections::HashMap;
 
+
     pub fn solve_a(layers: &HashMap<usize, usize>) -> usize {
         layers.iter().filter(|(depth, range)| *depth % (2 * (*range - 1)) == 0)
             .map(|(depth, range)| depth * range)
             .sum()
+    }
+
+    pub fn solve_b(layers: &HashMap<usize, usize>) -> usize {
+        (0..).find(|&delay| {
+                layers.iter()
+                    .filter(|(depth, range)| (*depth + delay) % (2 * (*range - 1)) == 0)
+                    .count() == 0
+            }).unwrap()
     }
 
     #[cfg(test)]
@@ -16,6 +25,13 @@ mod day13 {
             let layers = vec![(0, 3), (1,2), (4, 4), (6, 4)].into_iter().collect();
 
             assert_eq!(solve_a(&layers), 24);
+        }
+
+        #[test]
+        fn test_solve_b() {
+            let layers = vec![(0, 3), (1,2), (4, 4), (6, 4)].into_iter().collect();
+
+            assert_eq!(solve_b(&layers), 10);
         }
     }
 }
@@ -33,4 +49,5 @@ fn main() {
         }).collect();
 
     println!("Solution A-part: {}", day13::solve_a(&firewall));
+    println!("Solution B-part: {}", day13::solve_b(&firewall));
 }
