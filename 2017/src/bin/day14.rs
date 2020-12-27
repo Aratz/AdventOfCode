@@ -1,4 +1,6 @@
 mod day14 {
+    use std::collections::{HashMap, VecDeque, HashSet};
+
     const ROUNDS: usize = 64;
     const LENGTH: usize = 256;
     const SUFFIX: [usize; 5] = [17, 31, 73, 47, 23];
@@ -38,9 +40,39 @@ mod day14 {
         (0..128).map(|row| {
             let hash = knot_hash(&format!("{}-{}", s, row));
             hash.into_iter().map(
-                |n| (0..8).map(|bit| if n & (1<<bit) != 0 { 1 } else { 0}).sum::<usize>())
+                |n| (0..8).rev().map(|bit| if n & (1<<bit) != 0 { 1 } else { 0}).sum::<usize>())
                 .sum::<usize>()
         }).sum()
+    }
+
+    pub fn solve_b(s: &str) -> usize {
+        let mut grid: HashMap<(i32, i32), Option<(i32, i32)>> = (0..128).flat_map(|row| {
+            let hash = knot_hash(&format!("{}-{}", s, row));
+            hash.into_iter().enumerate().flat_map(
+                move |(i, n)| (0..8).rev().filter(move |&bit| n & (1<<bit) != 0)
+                        .map(move |bit| ((row as i32, (i*8 + (7 - bit)) as i32), None))
+                        )
+        }).collect();
+
+        while let Some((&source, _)) = grid.iter().find(|(_k, v)| v.is_none()) {
+            let mut queue: VecDeque<(i32, i32)> = VecDeque::new();
+            queue.push_back(source);
+
+            while let Some(coord) = queue.pop_front() {
+                grid.insert(coord, Some(source));
+
+                for (dx, dy) in vec![(-1, 0), (1, 0), (0, -1), (0, 1)].into_iter() {
+                    let (x, y) = coord;
+                    if let Some(None) = grid.get(&(x + dx, y + dy)) {
+                        queue.push_back((x + dx, y + dy));
+                    }
+                }
+            }
+        }
+
+        grid.values().filter_map(|&v| v)
+            .collect::<HashSet<(i32, i32)>>()
+            .len()
     }
 
     #[cfg(test)]
@@ -69,6 +101,11 @@ mod day14 {
         fn test_solve_a() {
             assert_eq!(solve_a("flqrgnkx"), 8108);
         }
+
+        #[test]
+        fn test_solve_b() {
+            assert_eq!(solve_b("flqrgnkx"), 1242);
+        }
     }
 }
 
@@ -80,4 +117,5 @@ fn main() {
     let key_string = stdin.lock().lines().next().unwrap().unwrap();
 
     println!("Solution A-part: {}", day14::solve_a(&key_string));
+    println!("Solution B-part: {}", day14::solve_b(&key_string));
 }
