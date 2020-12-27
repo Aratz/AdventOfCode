@@ -1,4 +1,7 @@
 mod day16 {
+    use std::mem;
+
+    #[derive(Copy, Clone, Debug)]
     pub enum DanceMove {
         Spin(usize),
         Exchange(usize, usize),
@@ -30,12 +33,52 @@ mod day16 {
         }
     }
 
-    pub fn solve_a(moves: &[DanceMove]) -> String {
-        let mut programs = ('a'..='p').collect();
-
+    fn exec_dance(
+            programs: &mut Vec<char>,
+            moves: &[DanceMove]) {
         for m in moves {
-            m.execute(&mut programs);
+            m.execute(programs);
         }
+    }
+
+    fn exec_dance_fast(
+            programs: &mut Vec<char>,
+            moves: &[DanceMove],
+            mut n: usize) {
+
+        let mut i_prog: Vec<usize> = (0..programs.len()).collect();
+        let mut dance = programs.clone();
+        exec_dance(&mut dance, moves);
+
+        let mut i_dance: Vec<usize> = dance.iter().map(
+            |new_pos| programs.iter().position(|c| c == new_pos).unwrap()).collect();
+
+        while n > 0 {
+            if n % 2 == 1 {
+                i_prog = i_dance.iter().map(|&p| i_prog[p]).collect();
+            }
+
+            i_dance = i_dance.iter().map(|&d| i_dance[d]).collect();
+            n /= 2;
+        }
+
+        *programs = i_prog.iter().map(|&p| programs[p]).collect();
+    }
+
+    pub fn solve_ab(moves: &[DanceMove], n: usize) -> String {
+        let mut programs: Vec<char> = ('a'..='p').collect();
+
+        let exspin = moves.iter().filter(
+            |&m| mem::discriminant(m) ==  mem::discriminant(&DanceMove::Spin(0))
+            || mem::discriminant(m) ==  mem::discriminant(&DanceMove::Exchange(0, 1))
+            ).copied().collect::<Vec<DanceMove>>();
+
+        let partner = moves.iter().filter(
+            |&m| mem::discriminant(m) ==  mem::discriminant(&DanceMove::Partner('a', 'b'))
+            ).copied().collect::<Vec<DanceMove>>();
+
+        exec_dance_fast(&mut programs, &exspin, n);
+        exec_dance_fast(&mut programs, &partner, n);
 
         programs.into_iter().collect()
     }
@@ -56,6 +99,39 @@ mod day16 {
 
             DanceMove::Partner('e', 'b').execute(&mut programs);
             assert_eq!(programs.iter().collect::<String>(), "baedc");
+        }
+
+        #[test]
+        fn test_solve_a() {
+            let moves = vec![
+                DanceMove::Spin(1),
+                DanceMove::Exchange(3, 4),
+                DanceMove::Partner('e', 'b'),
+            ];
+
+            let mut programs: Vec<_> = ('a'..='p').collect();
+            exec_dance(&mut programs, &moves);
+
+            assert_eq!(solve_ab(&moves, 1), programs.into_iter().collect::<String>());
+        }
+
+        #[test]
+        fn test_solve_b() {
+            let moves = vec![
+                DanceMove::Spin(1),
+                DanceMove::Exchange(3, 4),
+                DanceMove::Partner('e', 'b'),
+            ];
+
+            let n = 5;
+
+
+            let mut programs: Vec<_> = ('a'..='p').collect();
+            for _ in 0..n {
+                exec_dance(&mut programs, &moves);
+            }
+
+            assert_eq!(solve_ab(&moves, 5), programs.into_iter().collect::<String>());
         }
     }
 }
@@ -92,6 +168,6 @@ fn main() {
         }).collect::<Vec<_>>();
 
 
-    println!("Solution A-part: {}", day16::solve_a(&moves));
-
+    println!("Solution A-part: {}", day16::solve_ab(&moves, 1));
+    println!("Solution B-part: {}", day16::solve_ab(&moves, 1_000_000_000));
 }
