@@ -1,6 +1,7 @@
 mod day18 {
-    use std::collections::HashMap;
+    use std::collections::{HashMap, VecDeque};
 
+    #[derive(Clone, Debug)]
     pub enum Value {
         Reg(char),
         Num(i64),
@@ -22,13 +23,14 @@ mod day18 {
         }
     }
 
+    #[derive(Clone, Debug)]
     pub enum Inst {
         Snd(Value),
         Set(char, Value),
         Add(char, Value),
         Mul(char, Value),
         Mod(char, Value),
-        Rcv(Value),
+        Rcv(char),
         Jgz(Value, Value),
 
     }
@@ -59,9 +61,7 @@ mod day18 {
                     registers.entry(*x).and_modify(|e| *e %= y).or_insert(0);
                 },
                 Inst::Rcv(x) => {
-                    let x = x.unwrap(&registers);
-
-                    if x != 0 {
+                    if registers[&x] != 0 {
                         return last_played;
                     }
                 },
@@ -81,6 +81,102 @@ mod day18 {
         return -1;
     }
 
+    struct Computer {
+        pos: i64,
+        insts: Vec<Inst>,
+        registers: HashMap<char, i64>,
+        queue: VecDeque<i64>,
+        n_send: i64,
+        done: bool,
+        is_waiting: bool,
+    }
+
+    impl Computer {
+        fn new(id: i64, insts: &[Inst]) -> Self {
+            let mut registers = HashMap::new();
+            registers.insert('p', id);
+
+            Computer {
+                pos: 0,
+                insts: insts.to_vec(),
+                registers,
+                queue: VecDeque::new(),
+                n_send: 0,
+                done: false,
+                is_waiting: false,
+            }
+        }
+
+        fn step(&mut self) -> Option<i64> {
+            if self.done { return None };
+
+            match &self.insts[self.pos as usize] {
+                Inst::Snd(x) => {
+                    self.pos += 1;
+                    if self.pos < 0 || self.pos >= self.insts.len() as i64 { self.done = true; }
+
+                    self.n_send += 1;
+
+                    return Some(x.unwrap(&self.registers));
+                },
+                Inst::Rcv(x) => {
+                    if let Some(v) = self.queue.pop_front() {
+                        self.registers.insert(*x, v);
+                        self.is_waiting = false;
+                    }
+                    else {
+                        self.is_waiting = true;
+                        return None;
+                    }
+                },
+                Inst::Set(x, y) => {
+                    self.registers.insert(*x, y.unwrap(&self.registers));
+                },
+                Inst::Add(x, y) => {
+                    let y = y.unwrap(&self.registers);
+                    self.registers.entry(*x).and_modify(|e| *e += y).or_insert(y);
+                },
+                Inst::Mul(x, y) => {
+                    let y = y.unwrap(&self.registers);
+                    self.registers.entry(*x).and_modify(|e| *e *= y).or_insert(0);
+                },
+                Inst::Mod(x, y) => {
+                    let y = y.unwrap(&self.registers);
+                    self.registers.entry(*x).and_modify(|e| *e %= y).or_insert(0);
+                },
+                Inst::Jgz(x, y) => {
+                    let x = x.unwrap(&self.registers);
+                    let y = y.unwrap(&self.registers);
+                    if x > 0 {
+                        self.pos += y - 1;
+                    }
+                },
+            }
+            self.pos += 1;
+
+            if self.pos < 0 || self.pos >= self.insts.len() as i64 { self.done = true; }
+
+            return None;
+        }
+    }
+
+    pub fn solve_b(insts: &[Inst]) -> i64 {
+        let mut computers = vec![
+            Computer::new(0, insts),
+            Computer::new(1, insts),
+        ];
+
+        while !computers.iter().all(|c| c.done)
+            && !computers.iter().all(|c| c.is_waiting) {
+            for i in 0..2 {
+                if let Some(snd) = computers[i].step() {
+                    computers[1 - i].queue.push_back(snd);
+                }
+            }
+        }
+
+        computers[1].n_send
+    }
 
     #[cfg(test)]
     mod test_day18 {
@@ -122,11 +218,12 @@ fn main() {
                 "add" => Inst::Add(raw_inst[1].chars().next().unwrap(), Value::wrap(&raw_inst[2])),
                 "mul" => Inst::Mul(raw_inst[1].chars().next().unwrap(), Value::wrap(&raw_inst[2])),
                 "mod" => Inst::Mod(raw_inst[1].chars().next().unwrap(), Value::wrap(&raw_inst[2])),
-                "rcv" => Inst::Rcv(Value::wrap(&raw_inst[1])),
+                "rcv" => Inst::Rcv(raw_inst[1].chars().next().unwrap()),
                 "jgz" => Inst::Jgz(Value::wrap(&raw_inst[1]), Value::wrap(&raw_inst[2])),
                 _ => unreachable!()
             }
         }).collect();
 
     println!("Solve A-part: {}", day18::solve_a(&insts));
+    println!("Solve A-part: {}", day18::solve_b(&insts));
 }
