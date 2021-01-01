@@ -3,11 +3,12 @@ mod day19 {
         Up, Left, Down, Right,
     }
 
-    pub fn solve_a(tubes: &[Vec<char>]) -> String {
+    pub fn solve_ab(tubes: &[Vec<char>]) -> (String, usize) {
         let mut i = 0;
         let mut j = tubes[i].iter().position(|&c| c == '|').unwrap();
         let mut dir = Dir::Down;
         let mut res = String::new();
+        let mut step_count = 0;
 
         loop {
             match tubes[i][j] {
@@ -32,7 +33,7 @@ mod day19 {
                     }
                 },
                 _ => {
-                    return res;
+                    return (res, step_count);
                 },
             }
 
@@ -42,6 +43,7 @@ mod day19 {
                 Dir::Down  => { i += 1; },
                 Dir::Right => { j += 1;},
             }
+            step_count += 1;
         }
     }
 
@@ -50,12 +52,14 @@ mod day19 {
         use super::*;
 
         #[test]
-        fn test_solve_a() {
+        fn test_solve_ab() {
             let tubes: Vec<Vec<char>> = "     |          \n     |  +--+    \n     A  |  C    \n F---|----E|--+ \n     |  |  |  D \n     +B-+  +--+ \n                \n".lines()
                 .map(|l| l.chars().collect())
                 .collect();
 
-            assert_eq!(solve_a(&tubes).as_str(), "ABCDEF");
+            let (res, step_count) = solve_ab(&tubes);
+            assert_eq!(res.as_str(), "ABCDEF");
+            assert_eq!(step_count, 38);
         }
     }
 }
@@ -68,5 +72,7 @@ fn main() {
     let tubes: Vec<Vec<char>> = stdin.lock().lines()
         .map(|l| l.unwrap().chars().collect()).collect();
 
-    println!("Solution A-part: {}", day19::solve_a(&tubes));
+    let (res, step_count) = day19::solve_ab(&tubes);
+    println!("Solution A-part: {}", res);
+    println!("Solution B-part: {}", step_count);
 }
