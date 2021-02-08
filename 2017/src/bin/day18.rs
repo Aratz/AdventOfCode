@@ -191,7 +191,7 @@ mod day18 {
                 Inst::Mod('a', Value::Num(5)),
                 Inst::Snd(Value::Reg('a')),
                 Inst::Set('a', Value::Num(0)),
-                Inst::Rcv(Value::Reg('a')),
+                Inst::Rcv('a'),
                 Inst::Jgz(Value::Reg('a'), Value::Num(-1)),
                 Inst::Set('a', Value::Num(1)),
                 Inst::Jgz(Value::Reg('a'), Value::Num(-2)),
