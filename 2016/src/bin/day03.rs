@@ -12,6 +12,17 @@ mod day03 {
             .filter(|&is_tri| is_tri)
             .count()
     }
+
+    pub fn solve_b(lines: &Vec<Vec<i32>>) -> usize {
+        let mut specs: Vec<Vec<i32>> = Vec::new();
+        for i in 0..lines.len()/3 {
+            for j in 0..3 {
+                specs.push((0..3).map(|k| lines[3*i + k][j]).collect());
+            }
+        }
+
+        solve_a(&specs)
+    }
 }
 
 fn main() {
@@ -26,4 +37,5 @@ fn main() {
         .collect();
 
     println!("Solution A-part: {}", day03::solve_a(&specs));
+    println!("Solution B-part: {}", day03::solve_b(&specs));
 }
