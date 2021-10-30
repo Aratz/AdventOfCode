@@ -148,7 +148,7 @@ fn main() {
 
     println!("Solution A-part: {}", lines.iter().map(
             |line| day18::compute_expr_a(&line)).sum::<u64>());
-    println!("Solution A-part: {}", lines.iter().map(
+    println!("Solution B-part: {}", lines.iter().map(
             |line| day18::compute_expr_b(&line)).sum::<u64>());
 
 }
