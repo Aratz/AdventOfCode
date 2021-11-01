@@ -43,8 +43,7 @@ mod day07 {
 
     fn is_abba(s: &str) -> bool {
         s.chars().zip(s.chars().skip(1)).zip(s.chars().skip(2).zip(s.chars().skip(3)))
-            .filter(|((a1, b1), (b2, a2))| a1 == a2 && b1 == b2 && a1 != b1)
-            .next().is_some()
+            .find(|((a1, b1), (b2, a2))| a1 == a2 && b1 == b2 && a1 != b1).is_some()
     }
 
     fn get_abas(s: &str) -> Vec<String> {
