@@ -82,6 +82,7 @@ mod day07 {
         use super::*;
 
         #[test]
+        #[allow(non_snake_case)]
         fn test_is_TLS() {
             assert!(Ipv7::new("abba[mnop]qrst").is_TLS());
             assert!(Ipv7::new("ioxxoj[asdfgh]zxcvbn").is_TLS());
@@ -93,6 +94,7 @@ mod day07 {
         }
 
         #[test]
+        #[allow(non_snake_case)]
         fn test_is_SSL() {
             assert!(Ipv7::new("aba[bab]xyz").is_SSL());
             assert!(Ipv7::new("aaa[kek]eke").is_SSL());
