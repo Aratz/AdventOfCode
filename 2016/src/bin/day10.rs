@@ -3,11 +3,13 @@ extern crate regex;
 mod day10 {
     use std::collections::HashMap;
 
-    pub fn solve_a(lines: &Vec<String>) -> Result<i32, &'static str> {
+    pub fn solve_ab(lines: &Vec<String>) -> (i32, i32) {
         let mut network: HashMap<i32, (i32, i32)> = HashMap::new();
         let mut bots: HashMap<i32, Vec<i32>> = HashMap::new();
         let mut values: Vec<i32> = Vec::new();
         let mut outputs: HashMap<i32, Vec<i32>> = HashMap::new();
+
+        let mut sol_a = None;
 
         for inst in lines {
             let words: Vec<_> = inst.split(" ").collect();
@@ -58,12 +60,12 @@ mod day10 {
                 bots.remove(&bot);
 
                 if low == 17 && high == 61 {
-                    return Ok(bot);
+                    sol_a = Some(bot);
                 }
             }
         }
 
-        Err("No bot handled V17 and V61")
+        (sol_a.unwrap(), outputs[&0][0]*outputs[&1][0]*outputs[&2][0])
     }
 }
 
@@ -76,6 +78,8 @@ fn main() {
         .map(|line| line.unwrap())
         .collect();
 
-    println!("Solution A-part: {}", day10::solve_a(&lines).unwrap());
+    let (sol_a, sol_b) = day10::solve_ab(&lines);
+    println!("Solution A-part: {}", sol_a);
+    println!("Solution B-part: {}", sol_b);
 
 }
