@@ -37,8 +37,7 @@ mod day12 {
         }
     }
 
-    fn execute(instructions: &[Instruction]) -> [i32; NREG] {
-        let mut regs = [0; NREG];
+    fn execute(instructions: &[Instruction], mut regs: [i32; NREG]) -> [i32; NREG] {
         let mut i = 0;
         while i < instructions.len() {
             match instructions[i] {
@@ -55,8 +54,10 @@ mod day12 {
         regs
     }
 
-    pub fn solve_a(lines: &[String]) -> i32 {
-        let regs = execute(&lines.iter().map(|s| Instruction::new(s)).collect::<Vec<_>>());
+    pub fn solve(lines: &[String], init: [i32; NREG]) -> i32 {
+        let regs = execute(
+            &lines.iter().map(|s| Instruction::new(s)).collect::<Vec<_>>(),
+            init);
         regs[0]
     }
 }
@@ -70,5 +71,6 @@ fn main() {
         .map(|line| line.unwrap())
         .collect();
 
-    println!("Solution A-part: {}", day12::solve_a(&lines));
+    println!("Solution A-part: {}", day12::solve(&lines, [0; 4]));
+    println!("Solution B-part: {}", day12::solve(&lines, [0, 0, 1, 0]));
 }
