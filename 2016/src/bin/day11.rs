@@ -2,7 +2,7 @@ mod day11 {
     use std::collections::VecDeque;
     use std::collections::HashMap;
 
-    const ITEMS: usize = 11;
+    const ITEMS: usize = 15;
 
     fn is_valid(state: &[i32; ITEMS]) -> bool {
         let valid_range = state.iter().all(|&v| 0 <= v && v < 4);
@@ -68,7 +68,9 @@ mod day11 {
 }
 
 fn main() {
-    let init = [0, 0, 0, 0, 0, 1, 2, 1, 1, 1, 1];
-    println!("Solution A-part: {}", day11::solve_a(init.clone()));
+    let init = [0, 0, 0, 0, 0, 1, 2, 1, 1, 1, 1, 3, 3, 3, 3];
+    println!("Solution A-part: {}", day11::solve_a(init));
+    let init = [0, 0, 0, 0, 0, 1, 2, 1, 1, 1, 1, 0, 0, 0, 0];
+    println!("Solution B-part: {}", day11::solve_a(init));
 
 }
