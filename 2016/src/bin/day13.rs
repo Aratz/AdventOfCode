@@ -10,15 +10,19 @@ mod day13 {
         x >= 0 && y >= 0 && n_on % 2 == 0
     }
 
-    fn shortest_path(start: (i32, i32), end: (i32, i32), designer_code: i32) -> i32 {
+    fn shortest_path(start: (i32, i32), end: Option<(i32, i32)>,
+                     designer_code: i32, max_dist: Option<i32>) -> (Option<i32>, usize) {
         let mut queue: VecDeque<((i32, i32), i32)> = VecDeque::new();
         let mut visited: HashMap<(i32, i32), i32> = HashMap::new();
+
+        let max_dist = max_dist.unwrap_or(i32::MAX);
 
         queue.push_back((start, 0));
 
         while let Some(((x, y), dist)) = queue.pop_front() {
             if visited.contains_key(&(x, y))
-                || !is_open(x, y, designer_code) { continue; }
+                || !is_open(x, y, designer_code)
+                || dist > max_dist { continue; }
 
             for dxy in vec![-1, 1] {
                 queue.push_back(((x + dxy, y), dist + 1));
@@ -26,14 +30,18 @@ mod day13 {
             }
 
             visited.insert((x, y), dist);
-            if (x, y) == end { break; }
+            if Some((x, y)) == end { break; }
         }
 
-        visited[&end]
+        (end.map(|end| visited[&end]), visited.len())
     }
 
     pub fn solve_a(designer_code: i32) -> i32 {
-        shortest_path((1, 1), (31, 39), designer_code)
+        shortest_path((1, 1), Some((31, 39)), designer_code, None).0.unwrap()
+    }
+
+    pub fn solve_b(designer_code: i32) -> usize {
+        shortest_path((1, 1), None, designer_code, Some(50)).1
     }
 
     #[cfg(test)]
@@ -59,7 +67,7 @@ mod day13 {
 
         #[test]
         fn test_shortest_path() {
-            assert_eq!(shortest_path((1, 1), (7, 4), 10), 11);
+            assert_eq!(shortest_path((1, 1), Some((7, 4)), 10, None).0.unwrap(), 11);
         }
     }
 }
@@ -75,4 +83,5 @@ fn main() {
     }
 
     println!("Solution A-part: {}", day13::solve_a(buffer.trim().parse().unwrap()));
+    println!("Solution A-part: {}", day13::solve_b(buffer.trim().parse().unwrap()));
 }
