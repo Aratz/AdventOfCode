@@ -7,4 +7,5 @@ edition = "2021"
 
 [dependencies]
 regex = "1.5"
+fancy-regex = "0.7"
 md5 = "0.7"
