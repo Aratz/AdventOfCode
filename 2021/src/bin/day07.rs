@@ -1,24 +1,8 @@
 mod day07 {
     use std::cmp::min;
 
-    pub fn solve_a(crabs: &[i32]) -> i32 {
-        let mut crabs = crabs.to_vec();
-        crabs.sort_unstable();
-
-        let opt_pos = if crabs.len() % 2 == 1 { crabs[crabs.len()/2] }
-            else { (crabs[crabs.len()/2 - 1] + crabs[crabs.len()/2])/2 };
-
-        crabs.iter().map(|c| (c - opt_pos).abs()).sum()
-    }
-
-    fn cost(crabs: &[i32], pos: i32) -> i32 {
-        crabs.iter().map(|c|{
-                let diff = (c - pos).abs();
-                diff * (diff + 1) / 2
-            }).sum()
-    }
-
-    pub fn solve_b(crabs: &[i32]) -> i32 {
+    #[allow(non_snake_case)]
+    fn minimal_cost(crabs: &[i32], cost: &dyn Fn(&[i32], i32) -> i32) -> i32 {
         let mut start = 0;
         let mut end = crabs.len() as i32;
         let mut m = ((end - start) / 3 + start) as i32;
@@ -39,6 +23,26 @@ mod day07 {
 
         min(cost(crabs, m), cost(crabs, M))
     }
+
+    pub fn solve_a(crabs: &[i32]) -> i32 {
+        fn cost(crabs: &[i32], pos: i32) -> i32 {
+            crabs.iter().map(|c| (c - pos).abs()).sum()
+        }
+
+        minimal_cost(crabs, &cost)
+    }
+
+    pub fn solve_b(crabs: &[i32]) -> i32 {
+        fn cost(crabs: &[i32], pos: i32) -> i32 {
+            crabs.iter().map(|c|{
+                    let diff = (c - pos).abs();
+                    diff * (diff + 1) / 2
+                }).sum()
+        }
+
+        minimal_cost(crabs, &cost)
+    }
+
 
     #[cfg(test)]
     mod test_day07 {
