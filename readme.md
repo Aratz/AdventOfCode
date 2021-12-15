@@ -6,4 +6,8 @@ I usually use this opportunity to learn myself more about Rust.
 
 ## How to use it
 
-Install Cargo and simply run `cargo run --bin dayX`
+### Rust
+Install Cargo and simply run `cargo run --bin dayX < data/dayX.in`
+
+### Python
+Run `python dayX.py < data/dayX.py
