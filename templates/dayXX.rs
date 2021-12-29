@@ -1,5 +1,5 @@
 mod dayXX {
-    fn solve_a(input: &str) -> {
+    pub fn solve_a(input: &str) -> {
 
     }
 
