@@ -7,8 +7,7 @@ mod day17 {
     fn hits_target_y(y0: i32, v0: i32, (y_min, y_max): (i32, i32)) -> bool {
         (0..).map(|n| n*v0 - n*(n-1)/2 + y0)
             .take_while(|&y| y >= y_min)
-            .find(|&y| y < y_max)
-            .is_some()
+            .any(|y| y < y_max)
     }
 
     #[inline]
@@ -30,8 +29,7 @@ mod day17 {
         let ((x_min, x_max), (y_min, y_max)) = range;
         (0..).map(|n| (x0 + cumsum(vx) - cumsum(vx - n) , n*vy - n*(n-1)/2 + y0))
             .take_while(|&(x, y)| x <= x_max && y >= y_min)
-            .find(|&(x, y)| y <= y_max && x_min <= x)
-            .is_some()
+            .any(|(x, y)| y <= y_max && x_min <= x)
     }
 
     #[inline]

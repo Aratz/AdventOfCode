@@ -17,15 +17,13 @@ mod day24 {
     }
 
     pub fn solve(prgm: &[String], ab: bool) -> i64 {
-        let abc: Vec<_> = split_input(prgm)
-            .into_iter()
-            .map(|block| extract_abc(&block))
-            .collect();
-
         let mut input = [0; 14];
 
         let mut stack = Vec::new();
-        for (i, (a, b, c)) in abc.into_iter().enumerate() {
+        for (i, (a, b, c)) in split_input(prgm)
+            .into_iter()
+            .map(|block| extract_abc(&block))
+            .enumerate() {
             if c == 1 {
                 stack.push((i, b));
             }
@@ -33,7 +31,7 @@ mod day24 {
                 let (i_w, b) = stack.pop().unwrap();
                 let w01 = (1..=9)
                     .map(|w| (w, w + b + a))
-                    .filter(|&(_, w)| 1 <= w && w <= 9)
+                    .filter(|&(_, w)| (1..=9).contains(&w))
                     .collect::<Vec<_>>();
 
                 input[i_w] = w01[if ab { 0 } else { w01.len() - 1 }].0;

@@ -107,7 +107,7 @@ mod day18 {
 
         fn reduce(&mut self) {
             loop {
-                if let Some(_) = self.explode(0) { continue; }
+                if self.explode(0).is_some() { continue; }
 
                 if !self.split() { break; }
             }
@@ -126,7 +126,7 @@ mod day18 {
 
         fn add(self, other: &Number) -> Number {
             let mut res = Number::Pair((
-                Box::new(self.clone()),
+                Box::new(self),
                 Box::new(other.clone())
             ));
             res.reduce();

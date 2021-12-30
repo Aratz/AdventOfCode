@@ -162,6 +162,6 @@ fn main() {
         stdin_lock.read_to_string(&mut buffer).unwrap();
     }
 
-    println!("Solution A-part: {}", day16::solve_a(&buffer.trim()));
-    println!("Solution B-part: {}", day16::solve_b(&buffer.trim()));
+    println!("Solution A-part: {}", day16::solve_a(buffer.trim()));
+    println!("Solution B-part: {}", day16::solve_b(buffer.trim()));
 }

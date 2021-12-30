@@ -56,7 +56,7 @@ mod day10 {
         let mut seq = stack.as_slices().0.to_vec();
         seq.reverse();
 
-        seq.iter().map(|c| matching_brckt[&c]).collect()
+        seq.iter().map(|c| matching_brckt[c]).collect()
     }
 
     pub fn solve_a(lines: &[String]) -> i64 {
@@ -68,7 +68,7 @@ mod day10 {
             ].into_iter().collect();
 
         lines.iter()
-            .filter_map(|l| is_corrupted(&l))
+            .filter_map(|l| is_corrupted(l))
             .map(|c| base_scores[&c])
             .sum()
     }
@@ -83,9 +83,9 @@ mod day10 {
 
         let mut scores: Vec<i64> = lines.iter()
             .filter(|l| is_corrupted(l).is_none())
-            .map(|l| autocomplete(&l))
+            .map(|l| autocomplete(l))
             .map(|v| v.iter()
-                 .map(|c| base_scores[&c])
+                 .map(|c| base_scores[c])
                  .fold(0, |acc, x| acc*5 + x))
             .collect();
 

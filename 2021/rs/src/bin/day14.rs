@@ -1,10 +1,19 @@
 mod day14 {
     use std::collections::HashMap;
 
+    type Template = HashMap<(char, char), usize>;
+    type Rules = HashMap<(char, char), char>;
+
+    struct Input {
+        template: Template,
+        rules: Rules,
+        bounds: (char, char),
+    }
+
     fn apply(
-        template: &HashMap<(char, char), usize>,
-        rules: &HashMap<(char, char), char>)
-        -> HashMap<(char, char), usize> {
+        template: &Template,
+        rules: &Rules)
+        -> Template {
 
         let mut new_chain = HashMap::new();
 
@@ -18,10 +27,7 @@ mod day14 {
     }
 
     fn parse_input(s: &str)
-        -> (
-            HashMap<(char, char), usize>,
-            HashMap<(char, char), char>,
-            (char, char)) {
+        -> Input {
         let mut lines = s.lines();
 
         let template_raw: Vec<char> = lines.next().unwrap().chars().collect();
@@ -32,18 +38,18 @@ mod day14 {
             *template.entry((a, b)).or_default() += 1;
         }
 
-        let rules: HashMap<(char, char), char> = lines.skip(1)
+        let rules: Rules = lines.skip(1)
             .map(|l| {
                 let rule = l.split(" -> ")
                     .map(|s| s.chars().collect::<Vec<char>>()).collect::<Vec<_>>();
                 ((rule[0][0], rule[0][1]), rule[1][0])
             }).collect();
 
-        (template, rules, (template_raw[0], template_raw[template_raw.len() - 1]))
+        Input { template, rules, bounds: (template_raw[0], template_raw[template_raw.len() - 1]) }
     }
 
     fn count_elements(
-        polymer: &HashMap<(char, char), usize>,
+        polymer: &Template,
         bounds: (char, char))
         -> HashMap<char, usize> {
 
@@ -61,7 +67,7 @@ mod day14 {
     }
 
     pub fn solve(input: &str, max_step: usize) -> usize {
-        let (mut template, rules, bounds) = parse_input(input);
+        let Input { mut template, rules, bounds } = parse_input(input);
 
         for _ in 0..max_step {
             template = apply(&template, &rules);

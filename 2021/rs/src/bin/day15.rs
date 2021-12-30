@@ -35,7 +35,7 @@ mod day15 {
 
             for (di, dj) in &neighbors {
                 let new_pos = (pos.0 + di, pos.1 + dj);
-                if is_valid(new_pos, &map) {
+                if is_valid(new_pos, map) {
                     queue.push((
                             Reverse(d + map[new_pos.0 as usize][new_pos.1 as usize]),
                             new_pos));

@@ -68,7 +68,7 @@ mod day08 {
 
     pub fn solve_b(entries: &[(Vec<String>, Vec<String>)]) -> usize {
         entries.iter().map(|(patterns, output)| {
-            let mapping = decode(&patterns);
+            let mapping = decode(patterns);
             output.iter()
                 .map(|d| { mapping[d] })
                 .collect::<String>()
@@ -85,7 +85,7 @@ fn main () {
     let entries = stdin.lock().lines()
         .map(|l| {
             let entry = l.unwrap().split(" | ")
-             .map(|s| s.split(" ")
+             .map(|s| s.split(' ')
                   .map(|d| {
                       let mut d = d.chars().collect::<Vec<_>>();
                       d.sort_unstable();

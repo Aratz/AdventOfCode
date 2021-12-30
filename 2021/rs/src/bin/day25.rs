@@ -5,7 +5,7 @@ mod day25 {
 
         let mut new_seafloor= seafloor.to_vec();
 
-        for (di, dj) in vec![(0, 1), (1, 0)] {
+        for (di, dj) in [(0, 1), (1, 0)] {
             let herd = if (di, dj) == (0, 1) { '>' } else { 'v' };
 
             let moveable: Vec<_> = new_seafloor.iter().enumerate()

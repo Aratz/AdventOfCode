@@ -56,7 +56,7 @@ mod day11 {
 
         for step in 0.. {
             let sync_val = grid[0][0];
-            if grid.iter().flat_map(|row| row.iter().map(|v| v)).all(|&v| v == sync_val) {
+            if grid.iter().flat_map(|row| row.iter()).all(|&v| v == sync_val) {
                 return step;
             }
 

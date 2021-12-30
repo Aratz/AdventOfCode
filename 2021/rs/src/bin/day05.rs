@@ -2,7 +2,9 @@ mod day05 {
     use std::collections::HashMap;
     use std::cmp::{min, max};
 
-    pub fn solve_ab(vents: &[((i32, i32), (i32, i32))], diag: bool) -> usize {
+    pub type Vent = ((i32, i32), (i32, i32));
+
+    pub fn solve_ab(vents: &[Vent], diag: bool) -> usize {
         let mut map: HashMap<(i32, i32), usize> = HashMap::new();
 
         for &((x1, y1), (x2, y2)) in vents {
@@ -41,9 +43,9 @@ fn main() {
 
     let stdin = io::stdin();
 
-    let vents: Vec<((i32, i32), (i32, i32))> = stdin.lock().lines()
+    let vents: Vec<day05::Vent> = stdin.lock().lines()
         .map(|l| l.unwrap().split(" -> ")
-             .flat_map(|xy| xy.split(","))
+             .flat_map(|xy| xy.split(','))
              .map(|n| n.parse().unwrap())
              .collect::<Vec<i32>>())
         .map(|v| ((v[0], v[1]), (v[2], v[3])))

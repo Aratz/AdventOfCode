@@ -1,6 +1,7 @@
 mod day20 {
     use std::collections::HashSet;
 
+    #[allow(clippy::collapsible_else_if)]
     fn decode(
         image: &HashSet<(i32, i32)>,
         algorithm: &[bool],
@@ -24,7 +25,7 @@ mod day20 {
                         }
                     })
                     .enumerate()
-                    .map(|(i, n)| n * 1<<(8 - i))
+                    .map(|(i, n)| n << (8 - i))
                     .sum::<usize>();
 
                 if !rev_source {
@@ -71,10 +72,10 @@ fn main() {
 
     let mut lines = stdin.lock().lines();
 
-    let raw_alg = lines.next().unwrap().unwrap().to_string();
+    let raw_alg = lines.next().unwrap().unwrap();
 
     let raw_img: Vec<String> = lines.skip(1)
-        .map(|l| l.unwrap().to_string())
+        .map(|l| l.unwrap())
         .collect();
 
     println!("Solution A-part: {}", day20::solve(&raw_img, &raw_alg, 2));

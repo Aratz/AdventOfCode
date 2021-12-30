@@ -81,7 +81,7 @@ fn main() {
     let mut lines_iter = lines.iter();
 
     let draw: Vec<i32> = lines_iter.next().unwrap()
-        .split(",")
+        .split(',')
         .map(|s| s.parse().unwrap())
         .collect();
 
@@ -89,7 +89,7 @@ fn main() {
 
     while lines_iter.next().is_some() {
         let board: Vec<Vec<i32>> = (0..5).map(|_| lines_iter.next().unwrap())
-            .map(|s| s.split(" ")
+            .map(|s| s.split(' ')
                  .filter(|s| !s.is_empty())
                  .map(|n| n.parse().unwrap()).collect())
             .collect();

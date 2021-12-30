@@ -46,7 +46,7 @@ fn main() {
 
     let course: Vec<(String, i32)> = stdin.lock().lines()
         .map(|s| {
-            let command: Vec<String> = s.unwrap().split(" ").map(|s| s.into()).collect();
+            let command: Vec<String> = s.unwrap().split(' ').map(|s| s.into()).collect();
             (String::from(&command[0]), command[1].parse().unwrap())})
         .collect();
 

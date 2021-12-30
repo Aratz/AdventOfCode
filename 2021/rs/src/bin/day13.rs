@@ -2,6 +2,7 @@ mod day13 {
     use std::collections::HashSet;
     use std::iter::FromIterator;
 
+    #[allow(clippy::collapsible_else_if)]
     fn do_fold(points: &[(i32, i32)], fold: (i32, i32)) -> Vec<(i32, i32)> {
         let unique_points: HashSet<(i32, i32)> = HashSet::from_iter(
             points.iter().map(|&(x, y)| {
@@ -101,8 +102,8 @@ fn main() {
         .map(|s| {
             let s: Vec<&str> = s.split('=').collect();
             (
-                if s[0].chars().last().unwrap() == 'x' { s[1].parse().unwrap() } else { 0 },
-                if s[0].chars().last().unwrap() == 'y' { s[1].parse().unwrap() } else { 0 }
+                if s[0].ends_with('x') { s[1].parse().unwrap() } else { 0 },
+                if s[0].ends_with('y') { s[1].parse().unwrap() } else { 0 }
                 )
         }).collect();
 

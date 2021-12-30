@@ -49,7 +49,7 @@ fn main() {
         stdin_lock.read_to_string(&mut buffer).unwrap();
     }
 
-    let fish: Vec<usize> = buffer.trim().split(",")
+    let fish: Vec<usize> = buffer.trim().split(',')
         .map(|n| n.parse().unwrap())
         .collect();
 

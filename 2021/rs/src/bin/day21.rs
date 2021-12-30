@@ -1,6 +1,8 @@
 mod day21 {
     use std::collections::HashMap;
 
+    type PossibleUniverse= HashMap<((usize, usize), (usize, usize)), usize>;
+
     fn get_i(player: usize, start: usize, total_score: usize) -> (usize, usize) {
         let offset = match player {
             1 => 2,
@@ -55,9 +57,8 @@ mod day21 {
         }
     }
 
-    fn compute_next_round(
-        dp: HashMap<((usize, usize), (usize, usize)), usize>,
-        player: usize) -> HashMap<((usize, usize), (usize, usize)), usize> {
+    fn compute_next_round( dp: PossibleUniverse, player: usize)
+        -> PossibleUniverse {
         let mut new_dp = HashMap::new();
 
 

@@ -73,7 +73,7 @@ fn main() {
     }
 
     let crabs: Vec<i32> = buffer.trim()
-        .split(",")
+        .split(',')
         .map(|c| c.parse().unwrap())
         .collect();
 

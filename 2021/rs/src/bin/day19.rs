@@ -2,7 +2,9 @@ mod day19 {
     use std::collections::{HashSet, VecDeque};
     use std::iter::FromIterator;
 
-    fn rotate(mut pos: (i32, i32, i32), rot: (usize, usize, usize)) -> (i32, i32, i32) {
+    type Point = (i32, i32, i32);
+
+    fn rotate(mut pos: Point, rot: (usize, usize, usize)) -> Point {
         for _ in 0..rot.0 {
             pos = (pos.0, -pos.2, pos.1);
         }
@@ -18,13 +20,13 @@ mod day19 {
         pos
     }
 
-    fn match_scans(scan_a: &[(i32, i32, i32)], scan_b: &[(i32, i32, i32)])
-        -> Option<(i32, i32, i32)> {
+    fn match_scans(scan_a: &[Point], scan_b: &[Point])
+        -> Option<Point> {
 
         for a in scan_a {
             for b in scan_b {
                 let trans = (a.0 - b.0, a.1 - b.1, a.2 - b.2);
-                if scan_a.iter().map(|p| *p).collect::<HashSet<_>>().intersection(
+                if scan_a.iter().copied().collect::<HashSet<_>>().intersection(
                     &scan_b.iter()
                     .map(|(x, y, z)| (x + trans.0, y + trans.1, z + trans.2))
                     .collect()).count() >= 12 {
@@ -37,23 +39,20 @@ mod day19 {
     }
 
     fn add(
-        set_scanners: &mut Vec<Vec<(i32, i32, i32)>>,
-        new_scan: &[(i32, i32, i32)]) -> Result<(i32, i32, i32), ()> {
+        set_scanners: &mut Vec<Vec<Point>>,
+        new_scan: &[Point]) -> Result<Point, ()> {
         for rx in 0..4 {
             for ry in 0..4 {
                 for rz in 0..4 {
                     let rot_scan: Vec<(i32, i32, i32)> = new_scan.iter()
                         .map(|pos| rotate(*pos, (rx, ry, rz))).collect();
                     for scan_a in set_scanners.iter() {
-                        match match_scans(&scan_a, &rot_scan) {
-                            Some((dx, dy, dz)) => {
+                        if let Some((dx, dy, dz)) = match_scans(scan_a, &rot_scan) {
                                 set_scanners.push(
                                     rot_scan.into_iter()
                                     .map(|(x, y, z)| (x + dx, y + dy, z + dz))
-                                    .collect::<Vec<(i32, i32, i32)>>());
+                                    .collect::<Vec<Point>>());
                                 return Ok((dx, dy, dz));
-                            },
-                            None => {},
                         }
                     }
                 }
@@ -63,12 +62,12 @@ mod day19 {
         Err(())
     }
 
-    fn assemble(scanners: &[Vec<(i32, i32, i32)>]) -> (Vec<(i32, i32, i32)>, Vec<(i32, i32, i32)>) {
+    fn assemble(scanners: &[Vec<Point>]) -> (Vec<Point>, Vec<Point>) {
         let mut set_scanners = vec![scanners[0].clone()];
         let mut pos_scanners = vec![(0, 0, 0)];
 
-        let mut queue: VecDeque<Vec<(i32, i32, i32)>> = VecDeque::from(
-            scanners.into_iter().skip(1).map(|p| p.clone()).collect::<Vec<_>>());
+        let mut queue: VecDeque<Vec<Point>> = VecDeque::from(
+            scanners.iter().skip(1).cloned().collect::<Vec<_>>());
 
 
 
@@ -81,12 +80,12 @@ mod day19 {
 
         (set_scanners.into_iter()
             .map(|scan| HashSet::from_iter(scan.into_iter()))
-            .fold(HashSet::new(), |acc, x| acc.union(&x).map(|p| *p).collect())
+            .fold(HashSet::new(), |acc, x| acc.union(&x).copied().collect())
             .into_iter().collect(),
         pos_scanners)
     }
 
-    fn parse(input: &[String]) -> Vec<Vec<(i32, i32, i32)>> {
+    fn parse(input: &[String]) -> Vec<Vec<Point>> {
         let mut scanners = Vec::new();
         let mut new_scanner = Vec::new();
 

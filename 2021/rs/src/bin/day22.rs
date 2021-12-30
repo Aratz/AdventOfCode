@@ -22,7 +22,7 @@ mod day22 {
     fn parse(input: &str) -> Vec<(Cube, bool)> {
         let re_parse = Regex::new(r"(?P<onoff>\w+) x=(?P<xmin>-?\d+)..(?P<xmax>-?\d+),y=(?P<ymin>-?\d+)..(?P<ymax>-?\d+),z=(?P<zmin>-?\d+)..(?P<zmax>-?\d+)").unwrap();
 
-    re_parse.captures_iter(&input)
+    re_parse.captures_iter(input)
         .map(|capt|
              (Cube {
                  x: (capt["xmin"].parse().unwrap(), capt["xmax"].parse().unwrap()),
