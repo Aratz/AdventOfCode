@@ -6,3 +6,4 @@ authors = ["Adrien Coulier <adrien.coulier@free.fr>"]
 [dependencies]
 md5 = "0.7"
 regex = "1.5"
+itertools = "0.10"
