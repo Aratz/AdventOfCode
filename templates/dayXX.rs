@@ -1,5 +1,9 @@
 mod dayXX {
-    pub fn solve_a(input: &str) -> {
+    pub fn solve_a(input: &str) -> () {
+
+    }
+
+    pub fn solve_b(input: &str) -> () {
 
     }
 
@@ -9,6 +13,11 @@ mod dayXX {
 
         #[test]
         fn test_solve_a() {
+
+        }
+
+        #[test]
+        fn test_solve_b() {
 
         }
     }
