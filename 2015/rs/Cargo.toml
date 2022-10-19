@@ -2,6 +2,7 @@
 name = "Advent_of_Code_2015"
 version = "0.1.0"
 authors = ["Adrien Coulier <adrien.coulier@free.fr>"]
+edition = "2021"
 
 [dependencies]
 md5 = "0.7"
