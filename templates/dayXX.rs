@@ -1,10 +1,10 @@
 mod dayXX {
-    pub fn solve_a(input: &str) -> () {
-
+    pub fn solve_a(input: &str) -> i32 {
+        0
     }
 
-    pub fn solve_b(input: &str) -> () {
-
+    pub fn solve_b(input: &str) -> i32 {
+        0
     }
 
     #[cfg(test)]
