@@ -1,0 +1,7 @@
+[package]
+name = "Advent_of_Code_2022"
+version = "0.1.0"
+edition = "2021"
+authors = ["Adrien Coulier <adrien.coulier@free.fr>"]
+
+[dependencies]
