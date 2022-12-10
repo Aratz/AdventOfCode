@@ -3,7 +3,7 @@ mod day08 {
         let (x, y) = coord;
         //top
         {
-            let (mut xt, mut yt) = coord;
+            let (mut xt, yt) = coord;
             while xt > 0 {
                 if tree_map[xt - 1][yt] < tree_map[x][y] { xt -= 1; }
                 else { break; }
@@ -14,7 +14,7 @@ mod day08 {
         }
         //right
         {
-            let (mut xt, mut yt) = coord;
+            let (xt, mut yt) = coord;
             while yt < tree_map[0].len() - 1 {
                 if tree_map[xt][yt + 1] < tree_map[x][y] { yt += 1; }
                 else { break; }
@@ -25,7 +25,7 @@ mod day08 {
         }
         //bottom
         {
-            let (mut xt, mut yt) = coord;
+            let (mut xt, yt) = coord;
             while xt < tree_map.len() - 1 {
                 if tree_map[xt + 1][yt] < tree_map[x][y] { xt += 1; }
                 else { break; }
@@ -36,7 +36,7 @@ mod day08 {
         }
         //left
         {
-            let (mut xt, mut yt) = coord;
+            let (xt, mut yt) = coord;
             while yt > 0 {
                 if tree_map[xt][yt - 1] < tree_map[x][y] { yt -= 1; }
                 else { break; }
@@ -54,7 +54,7 @@ mod day08 {
         let (x, y) = coord;
         //top
         {
-            let (mut xt, mut yt) = coord;
+            let (mut xt, yt) = coord;
             while xt > 0 && tree_map[xt - 1][yt] < tree_map[x][y] {
                 xt -= 1;
             }
@@ -63,7 +63,7 @@ mod day08 {
         }
         //right
         {
-            let (mut xt, mut yt) = coord;
+            let (xt, mut yt) = coord;
             while yt < tree_map[0].len() - 1 && tree_map[xt][yt + 1] < tree_map[x][y] {
                 yt += 1;
             }
@@ -72,7 +72,7 @@ mod day08 {
         }
         //bottom
         {
-            let (mut xt, mut yt) = coord;
+            let (mut xt, yt) = coord;
             while xt < tree_map.len() - 1 && tree_map[xt + 1][yt] < tree_map[x][y] {
                 xt += 1;
             }
@@ -81,7 +81,7 @@ mod day08 {
         }
         //left
         {
-            let (mut xt, mut yt) = coord;
+            let (xt, mut yt) = coord;
             while yt > 0 && tree_map[xt][yt - 1] < tree_map[x][y] {
                 yt -= 1;
             }
