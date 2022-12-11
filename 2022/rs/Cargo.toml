@@ -5,3 +5,5 @@ edition = "2021"
 authors = ["Adrien Coulier <adrien.coulier@free.fr>"]
 
 [dependencies]
+regex = "1.7"
+evalexpr = "8.1"
