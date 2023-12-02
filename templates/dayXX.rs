@@ -11,14 +11,16 @@ mod dayXX {
     mod test_dayXX {
         use super::*;
 
+        static INPUT: &str = "";
+
         #[test]
         fn test_solve_a() {
-
+            assert_eq!(solve_a(INPUT), 0);
         }
 
         #[test]
         fn test_solve_b() {
-
+            assert_eq!(solve_b(INPUT), 0);
         }
     }
 
